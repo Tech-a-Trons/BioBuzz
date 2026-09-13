@@ -1,4 +1,19 @@
 apply plugin: 'com.android.application'
+// there should be 2 or 3 more lines that start with 'apply plugin:' here
+//apply plugin: 'dev.frozenmilk.sinister.sloth.load'
+//
+//buildscript {
+//    repositories {
+//        mavenCentral()
+//        maven {
+//            url "https://repo.dairy.foundation/releases"
+//        }
+//    }
+//    dependencies {
+//        classpath "dev.frozenmilk:Load:0.3.0"
+//    }
+//}
+
 
 //
 // build.gradle in TeamCode
@@ -24,9 +39,22 @@ android {
     }
 }
 
+repositories {
+    // Dairy releases repository
+    maven {
+        url = "https://repo.dairy.foundation/releases"
+    }
+    // Dairy snapshots repository
+    maven {
+        url = "https://repo.dairy.foundation/snapshots"
+    }
+}
+
 dependencies {
     implementation project(':FtcRobotController')
     implementation 'dev.nextftc.v2:control:0.2.0'
     implementation 'dev.nextftc.v2:hardware:0.2.0'
     implementation 'dev.nextftc.v2:robot:0.2.0'
+    implementation("dev.frozenmilk.sinister:Sloth:0.3.0")
 }
+
