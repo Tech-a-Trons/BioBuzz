@@ -42,8 +42,14 @@ repositories {
 
 dependencies {
     implementation project(':FtcRobotController')
-    implementation 'dev.nextftc:ftc:1.1.0'
-    implementation 'dev.nextftc:hardware:1.1.0'
-    implementation("dev.frozenmilk.sinister:Sloth:0.3.0")
+
+    // NextFTC v2 (Robot Module) — replaces the old dev.nextftc:ftc / dev.nextftc:hardware
+    implementation 'dev.nextftc.v2:robot:0.2.0'
+    implementation 'dev.nextftc.v2:hardware:0.2.0'
+    implementation 'dev.nextftc.v2:control:0.2.0'
+    implementation 'com.pedropathing.ivy:core:1.1.1'
+    implementation 'dev.nextftc:functional-interfaces:1.0.1'
+    implementation 'dev.frozenmilk.sinister:Sloth:0.3.0'
+
     implementation("com.bylazar:fullpanels:1.0.12")
 }
