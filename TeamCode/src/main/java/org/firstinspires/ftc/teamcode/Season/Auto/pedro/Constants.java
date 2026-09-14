@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedro;
+package org.firstinspires.ftc.teamcode.Season.Auto.pedro;
 
 import com.pedropathing.algorithm.Foresight;
 import com.pedropathing.follower.Follower;
