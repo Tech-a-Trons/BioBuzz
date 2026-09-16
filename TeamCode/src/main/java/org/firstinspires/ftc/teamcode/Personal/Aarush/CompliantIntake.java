@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.Personal.Aarush;
 import com.pedropathing.ivy.Command;
 import dev.nextftc.hardware.actuators.NextMotor;
 import dev.nextftc.robot.Mechanism;
-public class Intake implements Mechanism {
+public class CompliantIntake implements Mechanism {
 
     private final NextMotor motor = new NextMotor("motor");
 
