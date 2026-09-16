@@ -7,8 +7,10 @@ import static dev.nextftc.units.Units.DegreesPerSecond;
 import com.pedropathing.ivy.Command;
 
 import dev.nextftc.hardware.actuators.NextMotor;
+import dev.nextftc.robot.Mechanism;
 
-public class Simpleflywheelmech {
+//Mechanism -> New subsystem
+public class Simpleflywheelmech implements Mechanism {
 
     //Initialize the motor
     NextMotor motor = new NextMotor("outtake");
