@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Season.TeleOp;
 
+
 import org.firstinspires.ftc.teamcode.Season.Subsystems.BaseSubsystemExamples.Simplemotormech;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.BaseSubsystemExamples.Simplenextrobot;
 
@@ -13,8 +14,8 @@ public class Simpletelebase extends NextOpMode {
 
     //Calls the mechanisms "part" of the robot (See Simplenextrobot for more detail)
 
-    Simplenextrobot robot;
 
+   Simplenextrobot robot;
     public Simpletelebase(Simplenextrobot robot) { super(robot); }
 
     //Runs periodically in init
