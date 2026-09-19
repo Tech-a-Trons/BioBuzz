@@ -51,9 +51,9 @@ public class Simpleflywheelmech implements Mechanism {
         double targetDegPerSec = targetRPM * 6.0;
 
         // Set the velocity setpoint to O
-        return infinite(() -> motor.setVelocitySetpoint(DegreesPerSecond.of(targetDegPerSec)));
+        return instant(() -> motor.setVelocitySetpoint(DegreesPerSecond.of(targetDegPerSec)));
 
-        //In case that infinite doesn't work, use this return!
-        //return instant(() -> motor.setVelocitySetpoint(DegreesPerSecond.of(targetDegPerSec)));
+        //In case that instant doesn't work, use this return!
+        //return infinite(() -> motor.setVelocitySetpoint(DegreesPerSecond.of(targetDegPerSec)));
     }
 }

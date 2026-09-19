@@ -18,19 +18,24 @@ public class Simpletelebase extends NextOpMode {
    Simplenextrobot robot;
     public Simpletelebase(Simplenextrobot robot) { super(robot); }
 
+    //Runs periodically in init
     @Override
     public void disabledPeriodic() {
         Telemetry.log("Status", "Init");
     }
 
+    //Runs once at start
     @Override
     public void start() {
         Telemetry.log("Status", "Start");
     }
 
+    //Runs periodically through the game
     @Override
     public void periodic() {
         Telemetry.log("Status", "Running");
+
+        //Calls the classes and method defined in the NextRobot class
 
         if (gamepad1.left_bumper) {
             robot.flywheel.run();
@@ -58,6 +63,7 @@ public class Simpletelebase extends NextOpMode {
         }
     }
 
+    //Runs once at stop
     @Override
     public void end() {
         Telemetry.log("Status", "End");
