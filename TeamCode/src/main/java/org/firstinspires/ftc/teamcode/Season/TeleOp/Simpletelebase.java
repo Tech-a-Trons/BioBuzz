@@ -31,8 +31,29 @@ public class Simpletelebase extends NextOpMode {
     public void periodic() {
         Telemetry.log("Status", "Running");
 
+        if (gamepad1.left_bumper) {
+            robot.flywheel.run();
+        }
+        if (gamepad1.right_bumper) {
+            robot.flywheel.stop();
+        }
         if (gamepad1.a) {
-            robot.getMechanisms();
+            robot.motor.burst();
+        }
+        if (gamepad1.x) {
+            robot.motor.slow();
+        }
+        if (gamepad1.b) {
+            robot.motor.stop();
+        }
+        if (gamepad1.y) {
+            robot.motor.run();
+        }
+        if (gamepad1.dpad_down) {
+            robot.servo.open();
+        }
+        if (gamepad1.dpad_right) {
+            robot.servo.close();
         }
     }
 
