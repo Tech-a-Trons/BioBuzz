@@ -11,6 +11,7 @@ public class Simplenextrobot implements NextRobot {
     public Simpleflywheelmech flywheel = new Simpleflywheelmech();
     public Simplemotormech motor = new Simplemotormech();
     public SimpleServoMech servo = new SimpleServoMech();
+    public Simpledrivetrainmech drivetrain = new Simpledrivetrainmech();
 
     //Essentially defines each mechanism as part of the robot, can be called in other programs
     @Override

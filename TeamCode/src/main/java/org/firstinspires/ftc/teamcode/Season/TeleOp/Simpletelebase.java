@@ -14,8 +14,7 @@ public class Simpletelebase extends NextOpMode {
 
     //Calls the mechanisms "part" of the robot (See Simplenextrobot for more detail)
 
-
-   Simplenextrobot robot;
+    Simplenextrobot robot;
     public Simpletelebase(Simplenextrobot robot) { super(robot); }
 
     //Runs periodically in init
@@ -28,6 +27,7 @@ public class Simpletelebase extends NextOpMode {
     @Override
     public void start() {
         Telemetry.log("Status", "Start");
+        robot.drivetrain.startDrive(gamepad1);
     }
 
     //Runs periodically through the game
@@ -54,6 +54,9 @@ public class Simpletelebase extends NextOpMode {
         }
         if (gamepad1.y) {
             robot.motor.run();
+        }
+        if (gamepad1.dpad_up) {
+            robot.motor.vomit();
         }
         if (gamepad1.dpad_down) {
             robot.servo.open();
