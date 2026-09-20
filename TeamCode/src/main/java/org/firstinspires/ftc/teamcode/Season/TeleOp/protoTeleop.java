@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Season.TeleOp;
 
 
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
 import org.firstinspires.ftc.teamcode.Season.Subsystems.BaseSubsystemExamples.Simplemotormech;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.BaseSubsystemExamples.Simplenextrobot;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Robot.ProtoBot;
@@ -18,8 +20,11 @@ public class protoTeleop extends NextOpMode {
 
 
     ProtoBot robot;
-    public protoTeleop(ProtoBot robot) { super(robot); }
 
+    public protoTeleop(ProtoBot robot) {
+        super(robot);
+        this.robot = robot;
+    }
     @Override
     public void disabledPeriodic() {
         Telemetry.log("Status", "Init");

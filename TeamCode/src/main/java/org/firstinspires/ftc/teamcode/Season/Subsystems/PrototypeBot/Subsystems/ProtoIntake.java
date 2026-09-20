@@ -6,7 +6,7 @@ import dev.nextftc.hardware.actuators.NextMotor;
 import dev.nextftc.robot.Mechanism;
 
 public class ProtoIntake implements Mechanism {
-    NextMotor motor = new NextMotor("Intake");
+    NextMotor motor = new NextMotor("intake");
 
     public Command run() { return infinite(() -> motor.setThrottle(1)); }
     public Command mid() {return infinite(() -> motor.setThrottle(0.5));}
