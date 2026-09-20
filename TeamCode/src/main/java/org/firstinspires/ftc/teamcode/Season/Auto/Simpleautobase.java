@@ -25,8 +25,10 @@ public class Simpleautobase extends NextOpMode {
     Simplenextrobot robot;
     public Simpleautobase(Simplenextrobot robot) { super(robot); }
 
+    //Calls follower
     Follower follower;
 
+    //Sets all of the points that the robot needs to go to
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private final Pose start = poseFactory.of(56, 8, 90);
@@ -40,6 +42,8 @@ public class Simpleautobase extends NextOpMode {
     private final Pose point4 = poseFactory.of(54.1255, 26.087, 270);
     private final Pose point4Control1 = poseFactory.of(9.4032, 45.2721, 0);
 
+
+    //Sets all the paths that the robot needs to go to
     public Path path1() {
         return curve(path1Start, path1Control1, path1Control2, path1).linear(path1Start, path1);
     }
@@ -56,9 +60,11 @@ public class Simpleautobase extends NextOpMode {
         return curve(point3, point4Control1, point4).linear(point3, point4);
     }
 
+    //Sequentially calls all of the paths
     private Command autoRoutine() {
         return sequential(
                 follow(follower, path1()),
+                //Call mechanisms here
                 follow(follower, path2()),
                 follow(follower, path3()),
                 follow(follower, path4())
@@ -70,6 +76,7 @@ public class Simpleautobase extends NextOpMode {
     public void disabledPeriodic() {
         Telemetry.log("Status", "Init");
 
+        //Sets up the scheduler and calls in the Constants
         Scheduler.reset();
 
         follower = Constants.create(hardwareMap);
@@ -82,6 +89,7 @@ public class Simpleautobase extends NextOpMode {
     public void start() {
         Telemetry.log("Status", "Start");
 
+        //Makes the auto start when play button is pressed
         schedule(autoRoutine());
     }
 
@@ -90,9 +98,9 @@ public class Simpleautobase extends NextOpMode {
     public void periodic() {
         Telemetry.log("Status", "Running");
 
+        //Starts follower and auto path
         follower.update();
         Scheduler.execute();
-        // add your other methods needed in the loop here
 
         telemetry.addData("X", follower.pose().x());
         telemetry.addData("Y", follower.pose().y());
