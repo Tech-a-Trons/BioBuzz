@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Season.Auto;
+package org.firstinspires.ftc.teamcode.Season.Prototypes;
 
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
@@ -10,20 +10,24 @@ import com.pedropathing.paths.Path;
 import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
+import static java.lang.Thread.sleep;
+
 import org.firstinspires.ftc.teamcode.Season.Auto.pedro.Constants;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.BaseSubsystemExamples.Simplenextrobot;
+import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Robot.ProtoBot;
 
 import dev.nextftc.robot.Telemetry;
 import dev.nextftc.robot.opmode.NextOpMode;
 
-public class Simpleautobase extends NextOpMode {
+public class ProtoAuton extends NextOpMode {
 
     //Calls the mechanisms "part" of the robot (See Simplenextrobot for more detail)
-    Simplenextrobot robot;
-    public Simpleautobase(Simplenextrobot robot) { super(robot); }
+    ProtoBot robot;
+    private ProtoAuton(ProtoBot robot) { super(robot); }
 
     //Calls follower
     Follower follower;
@@ -44,30 +48,40 @@ public class Simpleautobase extends NextOpMode {
 
 
     //Sets all the paths that the robot needs to go to
-    public Path path1() {
+    private Path path1() {
         return curve(path1Start, path1Control1, path1Control2, path1).linear(path1Start, path1);
     }
 
-    public Path path2() {
+    private Path path2() {
         return curve(path1, point2Control1, point2).linear(path1, point2);
     }
 
-    public Path path3() {
+    private Path path3() {
         return line(point2, point3).constant(point3);
     }
 
-    public Path path4() {
+    private Path path4() {
         return curve(point3, point4Control1, point4).linear(point3, point4);
     }
+
+    //For Pedro 3, the delays must be put as commands and defined earlier than the sequencer
+    //See: https://pedropathing.com/docs/ivy/utilities-and-decorators#wait
+    Command shootpause = waitMs(750); // waits 500ms
+    Command intpause = waitMs(500); // waits 500ms
 
     //Sequentially calls all of the paths
     private Command autoRoutine() {
         return sequential(
+                shootpause,
                 follow(follower, path1()),
-                //Call mechanisms here
+                robot.intake.run(),
+                intpause,
                 follow(follower, path2()),
+                shootpause,
                 follow(follower, path3()),
-                follow(follower, path4())
+                intpause,
+                follow(follower, path4()),
+                shootpause
         );
     }
 

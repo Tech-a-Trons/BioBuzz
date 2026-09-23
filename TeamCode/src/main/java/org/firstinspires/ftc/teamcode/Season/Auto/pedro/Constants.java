@@ -22,11 +22,15 @@ public class Constants {
                 c.backRightDirection.set(DcMotorSimple.Direction.FORWARD);
             }
     );
-//    public static Follower create(HardwareMap h) {
+
+    public static Follower create(HardwareMap h) {
 //        return new Follower(
 //                new PinpointLocalizer(h, localizerConfig),
 //                new Mecanum(h, drivetrainConfig),
 //                new Foresight(foresightConfig)
 //        );
-//    }
+
+        //Temp
+        return null;
+    }
 }
