@@ -1,23 +1,14 @@
 package org.firstinspires.ftc.teamcode.Season.TeleOp;
 
-
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.teamcode.Season.Subsystems.BaseSubsystemExamples.Simplemotormech;
-import org.firstinspires.ftc.teamcode.Season.Subsystems.BaseSubsystemExamples.Simplenextrobot;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Robot.ProtoBot;
-import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.ProtoIntake;
 
 import dev.nextftc.robot.Telemetry;
 import dev.nextftc.robot.opmode.NextOpMode;
 import dev.nextftc.robot.opmode.NextTeleop;
-
+import dev.nextftc.robot.triggers.CommandGamepad;
 
 @NextTeleop
 public class protoTeleop extends NextOpMode {
-
-    //Calls the mechanisms "part" of the robot (See Simplenextrobot for more detail)
-
 
     ProtoBot robot;
 
@@ -25,6 +16,7 @@ public class protoTeleop extends NextOpMode {
         super(robot);
         this.robot = robot;
     }
+
     @Override
     public void disabledPeriodic() {
         Telemetry.log("Status", "Init");
@@ -32,23 +24,19 @@ public class protoTeleop extends NextOpMode {
 
     @Override
     public void start() {
+        CommandGamepad gp1 = new CommandGamepad(gamepad1);
+        CommandGamepad gp2 = new CommandGamepad(gamepad2);
         Telemetry.log("Status", "Start");
         robot.drive.startDrive(gamepad1);
+
+        gp1.a().onTrue(robot.intake.run());
+        gp1.x().onTrue(robot.intake.stop());
+        gp1.b().onTrue(robot.intake.reverse());
     }
 
     @Override
     public void periodic() {
         Telemetry.log("Status", "Running");
-        if (gamepad1.a){
-            robot.intake.run();
-        }
-        if (gamepad1.x){
-            robot.intake.stop();
-        }
-        if(gamepad1.b){
-            robot.intake.reverse();
-        }
-
     }
 
     @Override

@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import dev.nextftc.hardware.actuators.NextMotor;
 import dev.nextftc.robot.Mechanism;
-import dev.nextftc.robot.drive.DriveCommands;
 
 public class Drivetrain implements Mechanism {
     public final NextMotor frontLeft = new NextMotor("fl");
@@ -13,6 +12,17 @@ public class Drivetrain implements Mechanism {
     public final NextMotor backRight = new NextMotor("br");
 
     public void startDrive(Gamepad gamepad) {
-        DriveCommands.mecanumDrive(frontLeft, frontRight, backLeft, backRight, gamepad).schedule();
+        infinite(() -> {
+            double forward = -gamepad.right_stick_x; // left stick Y: forward/back
+            double strafe  =  gamepad.left_stick_x; // left stick X: strafe
+            double turn    =  -gamepad.left_stick_y*-1; // right stick X: turn
+
+            double denom = Math.max(Math.abs(forward) + Math.abs(strafe) + Math.abs(turn), 1.0);
+
+            frontLeft.setThrottle((forward + strafe + turn) / denom);
+            backLeft.setThrottle((forward - strafe + turn) / denom);
+            frontRight.setThrottle((forward - strafe - turn) / denom);
+            backRight.setThrottle((forward + strafe - turn) / denom);
+        }).schedule();
     }
 }
