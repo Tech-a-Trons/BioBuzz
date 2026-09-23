@@ -27,7 +27,7 @@ public class ProtoAuton extends NextOpMode {
 
     //Calls the mechanisms "part" of the robot (See Simplenextrobot for more detail)
     ProtoBot robot;
-    public ProtoAuton(ProtoBot robot) { super(robot); }
+    private ProtoAuton(ProtoBot robot) { super(robot); }
 
     //Calls follower
     Follower follower;
@@ -48,27 +48,28 @@ public class ProtoAuton extends NextOpMode {
 
 
     //Sets all the paths that the robot needs to go to
-    public Path path1() {
+    private Path path1() {
         return curve(path1Start, path1Control1, path1Control2, path1).linear(path1Start, path1);
     }
 
-    public Path path2() {
+    private Path path2() {
         return curve(path1, point2Control1, point2).linear(path1, point2);
     }
 
-    public Path path3() {
+    private Path path3() {
         return line(point2, point3).constant(point3);
     }
 
-    public Path path4() {
+    private Path path4() {
         return curve(point3, point4Control1, point4).linear(point3, point4);
     }
 
-    //Sequentially calls all of the paths
-
+    //For Pedro 3, the delays must be put as commands and defined earlier than the sequencer
+    //See: https://pedropathing.com/docs/ivy/utilities-and-decorators#wait
     Command shootpause = waitMs(750); // waits 500ms
     Command intpause = waitMs(500); // waits 500ms
 
+    //Sequentially calls all of the paths
     private Command autoRoutine() {
         return sequential(
                 shootpause,
