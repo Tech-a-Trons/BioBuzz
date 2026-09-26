@@ -18,6 +18,6 @@ public class Simplenextrobot implements NextRobot {
     //Essentially defines each mechanism as part of the robot, can be called in other programs
     @Override
     public Set<Mechanism> getMechanisms() {
-        return Set.of(servo,motor,flywheel);
+        return Set.of(servo,motor,flywheel, drivetrain);
     }
 }
