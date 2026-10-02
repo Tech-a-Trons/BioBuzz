@@ -32,6 +32,8 @@ public class protoTeleop extends NextOpMode {
         gp1.a().onTrue(robot.intake.run());
         gp1.x().onTrue(robot.intake.stop());
         gp1.b().onTrue(robot.intake.reverse());
+        gp1.rightBumper().onTrue(robot.outtake.run());
+        gp1.leftBumper().onTrue(robot.outtake.stop());
     }
 
     @Override
