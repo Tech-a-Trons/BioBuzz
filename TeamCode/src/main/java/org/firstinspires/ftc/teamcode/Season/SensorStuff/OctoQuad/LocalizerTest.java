@@ -31,8 +31,7 @@ import com.qualcomm.robotcore.util.MovingStatistics;
  * localizer feature, located here:
  */
 @TeleOp
-public class LocalizerTest extends LinearOpMode
-{
+public class LocalizerTest extends LinearOpMode {
     // #####################################################################################
     // YOU MUST ADJUST THESE CONSTANTS FOR YOUR ROBOT! SEE THE QUICKSTART GUIDE.
     // #####################################################################################
