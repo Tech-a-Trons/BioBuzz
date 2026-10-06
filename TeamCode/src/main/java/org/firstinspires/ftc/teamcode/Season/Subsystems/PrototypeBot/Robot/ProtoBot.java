@@ -13,9 +13,9 @@ public class ProtoBot implements NextRobot {
 
     //Calls all of the mechanisms
 //    public Simpleflywheelmech flywheel = new Simpleflywheelmech();
-public ProtoIntake intake = new ProtoIntake();
-public Drivetrain drive = new Drivetrain();
-public ProtoOuttake outtake = new ProtoOuttake();
+    public ProtoIntake intake = new ProtoIntake();
+    public Drivetrain drive = new Drivetrain();
+    public ProtoOuttake outtake = new ProtoOuttake();
 //    public SimpleServoMech servo = new SimpleServoMech();
 
     //Essentially defines each mechanism as part of the robot, can be call in other programs

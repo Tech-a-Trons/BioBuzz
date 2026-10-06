@@ -6,6 +6,8 @@ import java.util.Set;
 
 import dev.nextftc.robot.Mechanism;
 import dev.nextftc.robot.NextRobot;
+
+@Disabled
 public class MechRobot implements NextRobot {
 
     //Calls all of the mechanisms that need to be used on the robot

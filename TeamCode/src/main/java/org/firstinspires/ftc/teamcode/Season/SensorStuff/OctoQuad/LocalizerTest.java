@@ -37,10 +37,10 @@ public class LocalizerTest extends LinearOpMode {
     // #####################################################################################
 
     //Look at the robot
-    static final int DEADWHEEL_PORT_X = 1;
-    static final int DEADWHEEL_PORT_Y = 2;
+    static final int DEADWHEEL_PORT_X = 0;
+    static final int DEADWHEEL_PORT_Y = 1;
     static final OctoQuadFWv3.EncoderDirection DEADWHEEL_X_DIR = OctoQuadFWv3.EncoderDirection.FORWARD;
-    static final OctoQuadFWv3.EncoderDirection DEADWHEEL_Y_DIR = OctoQuadFWv3.EncoderDirection.REVERSE;
+    static final OctoQuadFWv3.EncoderDirection DEADWHEEL_Y_DIR = OctoQuadFWv3.EncoderDirection.FORWARD;
 
     //Use DeadwheelCalibrator.java
     static final float X_TICKS_PER_MM = 12.66f;
