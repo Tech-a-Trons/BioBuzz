@@ -14,10 +14,7 @@ import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
-import static java.lang.Thread.sleep;
-
 import org.firstinspires.ftc.teamcode.Season.Auto.pedro.Constants;
-import org.firstinspires.ftc.teamcode.Season.Subsystems.BaseSubsystemExamples.Simplenextrobot;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Robot.ProtoBot;
 
 import dev.nextftc.robot.Telemetry;
@@ -66,7 +63,7 @@ public class ProtoAuton extends NextOpMode {
 
     //For Pedro 3, the delays must be put as commands and defined earlier than the sequencer
     //See: https://pedropathing.com/docs/ivy/utilities-and-decorators#wait
-    Command shootpause = waitMs(750); // waits 500ms
+    Command shootpause = waitMs(750); // waits 750ms
     Command intpause = waitMs(500); // waits 500ms
 
     //Sequentially calls all of the paths
