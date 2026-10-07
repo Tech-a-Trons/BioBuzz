@@ -13,12 +13,13 @@ import dev.nextftc.robot.Mechanism;
 public class Simpleflywheelmech implements Mechanism {
 
     //Initialize the motor
-    NextMotor motor = new NextMotor("outtake");
+    NextMotor left = new NextMotor("outtakeleft");
+//    NextMotor right = new NextMotor("outtakeright");
 
     public Command run() {
 
         //Sets up the PID for the motor
-        motor.getVelocityConstants()
+        left.getVelocityConstants()
                 .withP(0.002)
                 .withI(0.0)
                 .withD(0.0);
@@ -30,7 +31,7 @@ public class Simpleflywheelmech implements Mechanism {
         double targetDegPerSec = targetRPM * 6.0;
 
         // Set the velocity setpoint to 300 degrees
-        return infinite(() -> motor.setVelocitySetpoint(DegreesPerSecond.of(targetDegPerSec)));
+        return infinite(() -> left.setVelocitySetpoint(DegreesPerSecond.of(targetDegPerSec)));
 
         //In case that infinite doesn't work, use this return!
         //return instant(() -> motor.setVelocitySetpoint(DegreesPerSecond.of(targetDegPerSec)));
@@ -39,7 +40,7 @@ public class Simpleflywheelmech implements Mechanism {
     public Command stop() {
 
         //Sets up the PID for the motor
-        motor.getVelocityConstants()
+        left.getVelocityConstants()
                 .withP(0.002)
                 .withI(0.0)
                 .withD(0.0);
@@ -51,7 +52,7 @@ public class Simpleflywheelmech implements Mechanism {
         double targetDegPerSec = targetRPM * 6.0;
 
         // Set the velocity setpoint to O
-        return instant(() -> motor.setVelocitySetpoint(DegreesPerSecond.of(targetDegPerSec)));
+        return instant(() -> left.setVelocitySetpoint(DegreesPerSecond.of(targetDegPerSec)));
 
         //In case that instant doesn't work, use this return!
         //return infinite(() -> motor.setVelocitySetpoint(DegreesPerSecond.of(targetDegPerSec)));
