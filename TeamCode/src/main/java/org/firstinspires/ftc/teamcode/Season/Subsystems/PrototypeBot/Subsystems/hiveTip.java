@@ -1,22 +1,34 @@
 package org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import java.util.List;
 
 import dev.nextftc.robot.Mechanism;
+import dev.nextftc.robot.Telemetry;
 
 public class hiveTip implements Mechanism {
-    Limelight3A limelight = hardwareMap.get(Limelight3A.class, "limelight");
+    public Limelight3A limelight;
 
-    public void init() {
-        limelight.pipelineSwitch(1);  // Use pipeline slot 0 by default
-        limelight.start();
+    public void init(HardwareMap hardwareMap) {
+        if (limelight == null && hardwareMap != null) {
+            try {
+                limelight = hardwareMap.get(Limelight3A.class, "limelight");
+            } catch (Exception e) {
+                Telemetry.log("hiveTip Error", "Limelight device 'limelight' not found in hardwareMap!");
+            }
+        }
+        if (limelight != null) {
+            try {
+                limelight.pipelineSwitch(1);
+                limelight.start();
+            } catch (Exception e) {
+                Telemetry.log("hiveTip Error", "Failed to start Limelight: " + e.getMessage());
+            }
+        }
     }
 
     public final List<Integer> Redfront = List.of(34, 35, 36, 37);
@@ -57,8 +69,8 @@ public class hiveTip implements Mechanism {
         checkRed();
         checkBlue();
 
-        telemetry.addData("tagId", tagId);
-        telemetry.addData("redFront", redFront);
-        telemetry.addData("blueFront", blueFront);
+        Telemetry.log("tagId", String.valueOf(tagId));
+        Telemetry.log("redFront", String.valueOf(redFront));
+        Telemetry.log("blueFront", String.valueOf(blueFront));
     }
 }

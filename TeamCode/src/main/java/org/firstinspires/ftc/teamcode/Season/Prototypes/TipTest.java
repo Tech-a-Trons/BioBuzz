@@ -23,7 +23,7 @@ public class TipTest extends NextOpMode {
     @Override
     public void start() {
         Telemetry.log("Status", "TipTest Started");
-        robot.tip.init();
+        robot.tip.init(hardwareMap);
     }
 
     @Override

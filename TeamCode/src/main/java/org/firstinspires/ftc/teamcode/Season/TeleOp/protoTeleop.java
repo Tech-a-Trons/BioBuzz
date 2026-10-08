@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.Season.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Robot.ProtoBot;
 
-import dev.nextftc.robot.NextRobot;
 import dev.nextftc.robot.Telemetry;
 import dev.nextftc.robot.opmode.NextOpMode;
 import dev.nextftc.robot.opmode.NextTeleop;
@@ -29,6 +28,7 @@ public class protoTeleop extends NextOpMode {
         CommandGamepad gp2 = new CommandGamepad(gamepad2);
         Telemetry.log("Status", "Start");
         robot.drive.startDrive(gamepad1);
+        robot.tip.init(hardwareMap);
 
         gp1.a().onTrue(robot.intake.run());
         gp1.x().onTrue(robot.intake.stop());
