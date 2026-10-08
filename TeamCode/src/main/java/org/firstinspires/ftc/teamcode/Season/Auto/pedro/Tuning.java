@@ -4,6 +4,7 @@ import com.pedropathing.tuning.autotune.Procedure;
 import com.pedropathing.tuning.autotune.Tuner;
 
 import org.firstinspires.ftc.teamcode.Season.Auto.pedro.procedures.MecanumTuner;
+import org.firstinspires.ftc.teamcode.Season.Auto.pedro.procedures.OctoQuadTuner;
 import org.firstinspires.ftc.teamcode.Season.Auto.pedro.procedures.PinpointTuner;
 
 public class Tuning {
@@ -16,6 +17,13 @@ public class Tuning {
     public static Procedure pinpointTuner() {
         return new PinpointTuner();
     }
+
+    @Tuner
+    public static Procedure octoquadTuner() {
+        return new OctoQuadTuner();
+    }
+
+
 
     //For tests, finish other config, for foresight, then finish mech (mech fin) and pinpt
 
