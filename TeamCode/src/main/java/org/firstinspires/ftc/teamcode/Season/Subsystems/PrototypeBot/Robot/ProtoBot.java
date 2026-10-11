@@ -30,3 +30,4 @@ public class ProtoBot implements NextRobot {
         return Set.of(intake, drive, outtake);
     }
 }
+

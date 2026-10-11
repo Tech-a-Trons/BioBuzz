@@ -9,7 +9,9 @@ import dev.nextftc.hardware.actuators.NextServo;
 import dev.nextftc.robot.Mechanism;
 
 public class ProtoOuttake implements Mechanism { //Initialize the motor
-    NextMotor motor = new NextMotor("omotor1");
+    NextMotor motor = new NextMotor("outtake");
+    NextServo servo = new NextServo("oservo1");
+    NextServo servo2 = new NextServo("oservo2");
 
     public Command run() {
 
@@ -32,8 +34,6 @@ public class ProtoOuttake implements Mechanism { //Initialize the motor
         //return instant(() -> motor.setVelocitySetpoint(DegreesPerSecond.of(targetDegPerSec)));
     }
 
-
-
     public Command stop() {
 
         //Sets up the PID for the motor
@@ -53,6 +53,22 @@ public class ProtoOuttake implements Mechanism { //Initialize the motor
 
         //In case that instant doesn't work, use this return!
         //return infinite(() -> motor.setVelocitySetpoint(DegreesPerSecond.of(targetDegPerSec)));
-    }}
+    }
 
+//    public Command servo1N() {
+//        return infinite(() -> servo.setPosition(0.3));
+//    }
+//
+//    public Command servo2N() {
+//        return infinite(() -> servo2.setPosition(-0.3));
+//    }
+//
+//    public Command servo1P() {
+//        return infinite(() -> servo.setPosition(0));
+//    }
+//
+//    public Command servo2P() {
+//        return infinite(() -> servo2.setPosition(0));
+//    }
+}
 
