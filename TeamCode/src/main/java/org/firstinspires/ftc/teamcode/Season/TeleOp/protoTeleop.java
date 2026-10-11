@@ -37,10 +37,10 @@ public class protoTeleop extends NextOpMode {
 
         Telemetry.log("Status", "Start");
         robot.drive.startDrive(gamepad1);
-
-        gp1.leftBumper().onTrue(parallel(robot.intake.stop(), robot.shoot.stop(),robot.tranboy.stop()));
-        gp1.rightBumper().onTrue(parallel(robot.intake.run(),robot.tranboy.run()));
-        gp1.rightTrigger().isBetween(0.05,1).whileTrue(robot.shoot.run(40));
+//robot.intake.run() robot.intake.stop(),
+        gp1.leftBumper().onTrue(parallel( robot.shoot.stop(),robot.tranboy.stop()));
+        gp1.rightBumper().onTrue(parallel(robot.tranboy.run()));
+        gp1.rightTrigger().isBetween(0.05,1).whileTrue(robot.shoot.run(400));
     }
 
     @Override
