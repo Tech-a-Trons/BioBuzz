@@ -29,7 +29,7 @@ public class Steering extends NextOpMode {
     @Override
     public void disabledPeriodic() {
         limelight3A = hardwareMap.get(Limelight3A.class, "limelight3A");
-        limelight3A.pipelineSwitch(0);
+        limelight3A.pipelineSwitch(2);
     }
     @Override
     public void start() {
