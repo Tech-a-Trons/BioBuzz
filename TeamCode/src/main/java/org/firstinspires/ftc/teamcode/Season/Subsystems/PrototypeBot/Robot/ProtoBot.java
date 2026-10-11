@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Robot;
 
+import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.ColorSensor;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.ProtoIntake;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.ProtoOuttake;
+import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.hiveTip;
 
 import java.util.Set;
 
@@ -16,6 +18,10 @@ public class ProtoBot implements NextRobot {
     public ProtoIntake intake = new ProtoIntake();
     public Drivetrain drive = new Drivetrain();
     public ProtoOuttake outtake = new ProtoOuttake();
+
+    public hiveTip tip = new hiveTip();
+
+    public ColorSensor colorsensor = new ColorSensor();
 //    public SimpleServoMech servo = new SimpleServoMech();
 
     //Essentially defines each mechanism as part of the robot, can be call in other programs

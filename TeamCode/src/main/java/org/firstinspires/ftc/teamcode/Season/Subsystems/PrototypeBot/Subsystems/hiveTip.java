@@ -68,9 +68,5 @@ public class hiveTip implements Mechanism {
 
         checkRed();
         checkBlue();
-
-        Telemetry.log("tagId", String.valueOf(tagId));
-        Telemetry.log("redFront", String.valueOf(redFront));
-        Telemetry.log("blueFront", String.valueOf(blueFront));
     }
 }
