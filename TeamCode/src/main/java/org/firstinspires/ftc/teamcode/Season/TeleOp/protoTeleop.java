@@ -1,17 +1,11 @@
 package org.firstinspires.ftc.teamcode.Season.TeleOp;
 
-import static com.pedropathing.ivy.commands.Commands.instant;
-import static com.pedropathing.ivy.groups.Groups.parallel;
-
-import com.pedropathing.ivy.Scheduler;
-
 import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Robot.ProtoBot;
 
 import dev.nextftc.robot.Telemetry;
 import dev.nextftc.robot.opmode.NextOpMode;
 import dev.nextftc.robot.opmode.NextTeleop;
 import dev.nextftc.robot.triggers.CommandGamepad;
-import dev.nextftc.robot.triggers.Trigger;
 
 @NextTeleop
 public class protoTeleop extends NextOpMode {
@@ -22,9 +16,7 @@ public class protoTeleop extends NextOpMode {
         super(robot);
         this.robot = robot;
     }
-    private double targetRpm = 1000;
-    private static final double STEP = 100;
-    private static final double MAX_RPM = 6000;
+
     @Override
     public void disabledPeriodic() {
         Telemetry.log("Status", "Init");
@@ -34,13 +26,19 @@ public class protoTeleop extends NextOpMode {
     public void start() {
         CommandGamepad gp1 = new CommandGamepad(gamepad1);
         CommandGamepad gp2 = new CommandGamepad(gamepad2);
-
         Telemetry.log("Status", "Start");
         robot.drive.startDrive(gamepad1);
-//robot.intake.run() robot.intake.stop(),
-        gp1.leftBumper().onTrue(parallel( robot.shoot.stop(),robot.tranboy.stop()));
-        gp1.rightBumper().onTrue(parallel(robot.tranboy.run()));
-        gp1.rightTrigger().isBetween(0.05,1).whileTrue(robot.shoot.run(400));
+        robot.tip.init(hardwareMap);
+
+        gp1.a().onTrue(robot.intake.run());
+        gp1.x().onTrue(robot.intake.stop());
+        gp1.b().onTrue(robot.intake.reverse());
+        gp1.rightBumper().onTrue(robot.outtake.run());
+        gp1.leftBumper().onTrue(robot.outtake.stop());
+//        gp1.dpadUp().onTrue(robot.outtake.servo1N());
+//        gp1.dpadUp().onTrue(robot.outtake.servo2N());
+//        gp1.dpadDown().onTrue(robot.outtake.servo1P());
+//        gp1.dpadDown().onTrue(robot.outtake.servo2P());
     }
 
     @Override
