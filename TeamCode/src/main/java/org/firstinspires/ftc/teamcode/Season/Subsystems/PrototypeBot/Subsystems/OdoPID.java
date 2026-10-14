@@ -83,15 +83,20 @@ public class OdoPID {
         outtakeLeft.setPower(shooterPower);
     }
 
-    public String alliance;
+    public String alliance = "EMPTY";
 
     //Later, this will get input from the auto for Alliance
-    public void Alliance() {
-        alliance = "RED";
-        if (gamepad1.dpad_left) {
-            alliance = "BLUE";
-        }
+//    public void Alliance() {
+//        alliance = "RED";
+//        if (gamepad1.dpad_left) {
+//            alliance = "BLUE";
+//        }
+//    }
 
+    public void Localization() {
+        Pose LocPose = new Pose( 79, 8.5, Math.toRadians(90));
+        // On the fly Pose creation, we dont recommend this for Autonomous. Only accepts radians for heading
+        follower.setPose(LocPose); // overrides our pose
     }
 
     public void OdoRun() {

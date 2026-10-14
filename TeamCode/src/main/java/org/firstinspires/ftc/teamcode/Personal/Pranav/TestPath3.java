@@ -33,8 +33,8 @@ public class TestPath3 extends NextOpMode {
     //Sets all of the points that the robot needs to go to
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
-    private final Pose start = poseFactory.of(78.649, 8.4485, 90);
-    private final Pose path1 = poseFactory.of(79.3217, 70.7583, 180);
+    private final Pose start = poseFactory.of(79, 8.5, 90);
+    private final Pose path1 = poseFactory.of(79, 70.75, 90);
 
     public Path path1() {
         return line(start, path1).linear(start, path1);
