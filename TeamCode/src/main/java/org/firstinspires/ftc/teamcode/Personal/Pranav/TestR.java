@@ -40,7 +40,7 @@ public class TestR extends NextOpMode {
     private final Pose path1 = poseFactory.of(55.7758, 23.8906, 270);
     private final Pose point2 = poseFactory.of(40.0281, 40.4019, 180);
     private final Pose point2Control1 = poseFactory.of(41.6965, 25.5388, 0);
-    private final Pose point3 = poseFactory.of(19.2956, 42.3027, 180);
+    private final Pose point3 = poseFactory.of(18.3986, 40.2845, 180);
     private final Pose point4 = poseFactory.of(55.9628, 23.5016, 270);
     private final Pose point4Control1 = poseFactory.of(24.8407, 23.7995, 0);
 
@@ -69,8 +69,8 @@ public class TestR extends NextOpMode {
         return sequential(
                 spause,
                 follow(follower, path1()),
-                follow(follower, path2()),
                 robot.intake.run(),
+                follow(follower, path2()),
                 follow(follower, path3()),
                 intpause,
                 robot.intake.stop(),
