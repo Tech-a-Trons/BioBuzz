@@ -1,11 +1,11 @@
 package org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Robot;
 
-import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.ColorSensor;
+import org.firstinspires.ftc.teamcode.Season.SensorStuff.ColorSensor.ColorSensor;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.ProtoIntake;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.ProtoOuttake;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.Transfer;
-import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.hiveTip;
+import org.firstinspires.ftc.teamcode.Season.SensorStuff.Limelight.hiveTip;
 
 import java.util.Set;
 

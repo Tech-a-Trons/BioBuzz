@@ -20,7 +20,7 @@
  *   SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems;
+package org.firstinspires.ftc.teamcode.Season.SensorStuff.Laserbreak;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;

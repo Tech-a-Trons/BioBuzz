@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems;
+package org.firstinspires.ftc.teamcode.Season.SensorStuff.Limelight;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;

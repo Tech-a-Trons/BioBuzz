@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Season.Prototypes;
 
 import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Robot.ProtoBot;
-import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.ColorSensor;
 
 import dev.nextftc.robot.opmode.NextOpMode;
 import dev.nextftc.robot.opmode.NextTeleop;
