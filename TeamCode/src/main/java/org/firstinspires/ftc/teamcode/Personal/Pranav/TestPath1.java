@@ -46,7 +46,7 @@ public class TestPath1 extends NextOpMode {
         return sequential(
                 follow(follower, path1()),
                 robot.intake.run(),
-                robot.transfer.slow(),
+                //robot.transfer.slow(),
                 intpause
         );
     }

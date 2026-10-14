@@ -48,8 +48,8 @@ public class TestPath2 extends NextOpMode {
         return sequential(
                 follow(follower, path1()),
                 robot.intake.run(),
-                robot.transfer.run(),
-                robot.outtake.run(),
+//                robot.transfer.run(),
+//                robot.outtake.run(),
                 outtpause
         );
     }

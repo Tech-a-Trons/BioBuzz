@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Season.Auto.pedro;
 
+import static org.firstinspires.ftc.teamcode.Season.Auto.pedro.Constants.drivetrainConfig;
+
 import com.pedropathing.algorithm.Foresight;
 import com.pedropathing.revhub.drivetrains.Mecanum;
 import com.pedropathing.revhub.localizers.OctoQuadLocalizer;
@@ -16,7 +18,7 @@ public class Tuning {
 
     @Tuner
     public static Procedure tests() {
-        return new Tests(hardwareMap -> new Mecanum(hardwareMap, Constants.drivetrainConfig), (hardwareMap -> new OctoQuadLocalizer(hardwareMap, Constants.localizerConfig)), () -> new Foresight(Constants.foresightConfig));
+        return new Tests(hardwareMap -> new Mecanum(hardwareMap, drivetrainConfig), (hardwareMap -> new OctoQuadLocalizer(hardwareMap, Constants.localizerConfig)), () -> new Foresight(Constants.foresightConfig));
     }
 
     //For tests, finish other config, for foresight, then finish mech (mech fin) and pinpt
@@ -26,9 +28,15 @@ public class Tuning {
 //        return new Tests(hardwareMap -> new Mecanum(hardwareMap, Constants.drivetrainConfig), (hardwareMap -> new PinpointLocalizer(hardwareMap, Constants.localizerConfig)), () -> new Foresight(Constants.foresightConfig));
 //    }
 //
-//    @Tuner
-//    public static Procedure foresightTuner() {
-//        return new ForesightTuner((hardwareMap) -> new PinpointLocalizer(hardwareMap, Constants.localizerConfig), (hardwareMap) -> new Mecanum(hardwareMap, drivetrainConfig));
-//    }
+
+    @Tuner
+    public static Procedure octoquadTuner() {
+        return new OctoQuadTuner();
+    }
+
+    @Tuner
+    public static Procedure foresightTuner() {
+        return new ForesightTuner((hardwareMap) -> new OctoQuadLocalizer(hardwareMap, Constants.localizerConfig), (hardwareMap) -> new Mecanum(hardwareMap, drivetrainConfig));
+    }
 
 }

@@ -18,18 +18,18 @@ public class ProtoBot implements NextRobot {
 //    public Simpleflywheelmech flywheel = new Simpleflywheelmech();
     public ProtoIntake intake = new ProtoIntake();
     public Drivetrain drive = new Drivetrain();
-    public ProtoOuttake outtake = new ProtoOuttake();
+    //public ProtoOuttake outtake = new ProtoOuttake();
 
-    public hiveTip tip = new hiveTip();
-    public Transfer transfer = new Transfer();
+    //public hiveTip tip = new hiveTip();
+    //public Transfer transfer = new Transfer();
 
-    public ColorSensor colorsensor = new ColorSensor();
+    //public ColorSensor colorsensor = new ColorSensor();
 //    public SimpleServoMech servo = new SimpleServoMech();
 
     //Essentially defines each mechanism as part of the robot, can be call in other programs
     @Override
     public Set<Mechanism> getMechanisms() {
-        return Set.of(intake, drive, outtake, transfer, tip, colorsensor);
+        return Set.of(intake, drive);//, outtake, transfer, tip, colorsensor);
     }
 }
 
