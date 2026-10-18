@@ -5,7 +5,6 @@ import android.graphics.Color;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import dev.nextftc.robot.Mechanism;
 
@@ -14,21 +13,16 @@ public class ColorSensor implements Mechanism {
     private Servo rgbindicator;
 
     private boolean initialized = false;
+    private final boolean colorDetect = true;
 
-    float chue, csat, cval;
-    float red, green, blue, alpha;
+    private float chue, csat, cval;
+    private float red, green, blue, alpha;
 
     public float blue_nectar = 0;
-
     public float red_nectar = 0;
-
     public float pollen = 0;
 
-    public float current_sat = 0;
-    public float current_hue = 0;
-    public float current_val = 0;
-
-    ElapsedTime IncountTimer = new ElapsedTime();
+    public boolean color_counted = false;
 
     public ColorSensor() {}
 
@@ -44,12 +38,14 @@ public class ColorSensor implements Mechanism {
         } catch (Exception e) {
             initialized = false;
         }
+        blue_nectar = 0;
+        red_nectar = 0;
+        pollen = 0;
     }
 
     // ================= COLOR DETECTION =================
 
     public String getColor() {
-
         if (!initialized || colorsensor == null) return null;
 
         red = colorsensor.red();
@@ -75,69 +71,37 @@ public class ColorSensor implements Mechanism {
         csat = hsv[1];
         cval = hsv[2];
 
-        if (blue > red && blue > green && total > 50) {
-            return "purple";
-        } else if (green > red && green > blue && total > 50 && chue >= 50 && chue <= 170) {
-            return "green";
-        }
-
         return null;
     }
 
     // ================= BALL COUNTING =================
 
-    public void IncountBalls() throws InterruptedException {
+    public int IncountBalls() {
+        if (!initialized || colorsensor == null || color_counted) return 0;
 
-        if (!initialized || colorsensor == null) return;
-
-        String color = getColor();
-        current_sat = csat;
-        current_hue = chue;
-        current_val = cval;
-
-        if (IncountTimer.milliseconds() > 1000) {
-
-            if (chue > 190) {
-                blue_nectar += 1;
-                IncountTimer.reset();
-            } else if (chue < 130 && chue > 90){
-                pollen += 1;
-                IncountTimer.reset();
-            } else if (chue < 85) {
-                red_nectar += 1;
-                IncountTimer.reset();
-            }
+        if (chue > 190) {
+            blue_nectar += 1;
+            color_counted = true;
+            return 3; // Blue_Nectar
+        } else if (chue < 130 && chue > 90) {
+            pollen += 1;
+            color_counted = true;
+            return 1; // pollen
+        } else if (chue < 85) {
+            red_nectar += 1;
+            color_counted = true;
+            return 2; // Red_Nectar
         }
+
+        return 0;
     }
-
-    // ================= LIGHT CONTROL =================
-
-//    public void light() {
-//
-//        if (!initialized || rgbindicator == null) return;
-//
-//        if (artifactcounter == 0) {
-//            rgbindicator.setPosition(0);
-//        } else if (artifactcounter == 1) {
-//            rgbindicator.setPosition(0.3);
-//        } else if (artifactcounter == 2) {
-//            rgbindicator.setPosition(0.375);
-//        } else if (artifactcounter == 3) {
-//            rgbindicator.setPosition(0.5);
-//        } else {
-//            rgbindicator.setPosition(0.6);
-//        }
-//    }
 
     // ================= PERIODIC =================
 
     @Override
     public void periodic() {
-        if (!initialized) return; // periodic can run before init finishes
-        try {
-            IncountBalls();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        if (colorDetect) {
+            getColor();
         }
     }
 
