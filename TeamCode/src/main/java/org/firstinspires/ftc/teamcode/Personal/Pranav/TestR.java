@@ -6,10 +6,12 @@ import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.commands.Commands.instant;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
@@ -29,6 +31,8 @@ public class TestR extends NextOpMode {
     //Calls the mechanisms "part" of the robot (See Simplenextrobot for more detail)
     ProtoBot robot;
     OdoPID pid;
+
+    Servo hood;
 
     public TestR(ProtoBot robot) { super(robot); this.robot = robot;}
 
@@ -72,9 +76,14 @@ public class TestR extends NextOpMode {
     Command warmup = waitMs(2000);
     Command spause = waitMs(750); // waits 500ms
 
+    Command hoodboi() {
+        return instant(() -> hood.setPosition(0.3));
+    }
+
     //Sequentially calls all of the paths
     private Command autoRoutine() {
         return sequential(
+                hoodboi(),
                 pid.run(),
                 warmup,
                 robot.intake.run(),
@@ -88,6 +97,7 @@ public class TestR extends NextOpMode {
                 intpause,
                 robot.intake.stop(),
                 follow(follower, path4()),
+                hoodboi(),
                 pid.run(),
                 follow(follower,path5()),
                 //warmup,
@@ -104,6 +114,10 @@ public class TestR extends NextOpMode {
 
         //Sets up the scheduler and calls in the Constants
         Scheduler.reset();
+
+        pid.init(hardwareMap);
+
+        hood = hardwareMap.get(Servo.class,"hood");
 
         follower = Constants.create(hardwareMap);
         follower.setPose(start);
