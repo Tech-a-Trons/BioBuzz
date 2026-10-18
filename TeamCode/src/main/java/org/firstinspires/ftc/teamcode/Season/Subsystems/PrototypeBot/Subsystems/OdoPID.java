@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems;
 
+import static com.pedropathing.ivy.commands.Commands.instant;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
@@ -23,14 +24,20 @@ public class OdoPID {
     //Constants from Niranjan's tele
     // ---- Shooter PID constants (tune these) ----
     private static final double kS = 0.12;     // power to overcome friction
-    private static final double kV = 0.0074;   // power per RPM
-    private static final double kP = 0.02;     // error is in deg/s
+    private static final double kV = 0.001;   // power per RPM
+    private static final double kP = 0.02;    // error is in deg/s
     private static final double kI = 0.0;      // start at 0, add only if it settles below target
     private static final double kD = 0.0;      // start at 0, add only if it oscillates
 
     private static double TARGET_RPM = 27;
     private static final double DEG_PER_SEC_PER_RPM = 6.0; // RPM x 6 = deg/s
     private static final double MAX_INTEGRAL = 0.3;        // anti-windup limit (in power units)
+
+    // Shooter direction is handled here instead of setDirection().
+    // The PID runs on positive numbers; this sign only reverses the final motor power.
+    // -1 = spin the motor in the "reverse" direction. If the wheel spins the wrong way, change to 1.
+    private static final double SHOOTER_SIGN = -1;
+
 
     Follower follower;
 
@@ -56,7 +63,7 @@ public class OdoPID {
         outtakeLeft.setPower(0);
     }
 
-    public void run() {
+    public Command run() {
         double dt = timer.seconds();
         timer.reset();
 
@@ -80,7 +87,11 @@ public class OdoPID {
         shooterPower = feedforward + kP * error + integral + kD * derivative;
         shooterPower = Range.clip(shooterPower, 0, 1);
 
-        outtakeLeft.setPower(shooterPower);
+        shooterPower = shooterPower * SHOOTER_SIGN;
+
+        final double pwrf = shooterPower;
+
+        return instant(() -> outtakeLeft.setPower(pwrf));
     }
 
     public String alliance = "EMPTY";
@@ -99,7 +110,7 @@ public class OdoPID {
         follower.setPose(LocPose); // overrides our pose
     }
 
-    public void OdoRun() {
+    public Command OdoRun() {
 
         follower.update();               // must run every loop so the pose stays current
         Pose robotPose = follower.pose();
@@ -176,7 +187,9 @@ public class OdoPID {
         shooterPower = feedforward + kP * error + integral + kD * derivative;
         shooterPower = Range.clip(shooterPower, 0, 1);
 
-        outtakeLeft.setPower(shooterPower);
+        shooterPower = shooterPower * SHOOTER_SIGN;
+
+        final double pwrf = shooterPower;
 
         telemetry.addData("Robot X", x);
         telemetry.addData("Robot Y", y);
@@ -184,6 +197,8 @@ public class OdoPID {
         telemetry.addData("Robot YT", yt);
         telemetry.addData("Dist to goal", dist);
         telemetry.update();
+
+        return instant(() -> outtakeLeft.setPower(pwrf));
     }
 
 }
