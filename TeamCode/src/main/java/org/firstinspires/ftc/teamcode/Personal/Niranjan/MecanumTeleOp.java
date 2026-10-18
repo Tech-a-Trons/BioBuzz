@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -18,11 +19,11 @@ public class MecanumTeleOp extends LinearOpMode {
     // with ShooterDiagnostic: kS = power where it just starts moving, kV = extra power per RPM
     private static final double kS = 0.12;     // power to overcome friction
     private static final double kV = 0.001;   // power per RPM
-    private static final double kP = 0.01;    // error is in deg/s
+    private static final double kP = 0.02;    // error is in deg/s
     private static final double kI = 0.0;      // start at 0, add only if it settles below target
     private static final double kD = 0.0;      // start at 0, add only if it oscillates
 
-    private static final double TARGET_RPM = 27;
+    private static final double TARGET_RPM = 28.5;
     private static final double DEG_PER_SEC_PER_RPM = 6.0; // RPM x 6 = deg/s
     private static final double MAX_INTEGRAL = 0.3;        // anti-windup limit (in power units)
 
@@ -41,6 +42,7 @@ public class MecanumTeleOp extends LinearOpMode {
         DcMotor backRightMotor = hardwareMap.dcMotor.get("br");
         DcMotor transfer = hardwareMap.dcMotor.get("transfer");
         DcMotor intake = hardwareMap.dcMotor.get("intake");
+        Servo hood = hardwareMap.get(Servo.class,"hood");
 
         // Shooter: we run our own control, so disable the built-in velocity controller.
         // No setDirection() here, so the encoder and motor keep their default signs.
@@ -83,19 +85,26 @@ public class MecanumTeleOp extends LinearOpMode {
             backLeftMotor.setPower(backLeftPower);
             frontRightMotor.setPower(frontRightPower);
             backRightMotor.setPower(backRightPower);
-
+            if (gamepad1.dpad_up){
+                hood.setPosition(0.3);
+            }
             if (gamepad1.a) {
                 intake.setPower(-1);
-                transfer.setPower(1);
+                transfer.setPower(-1);
             }
-            if (gamepad1.x) {
+            if (gamepad1.left_bumper) {
                 transfer.setPower(0);
                 intake.setPower(0);
             }
-            if (gamepad1.b) {
-                transfer.setPower(-1);
+            if (gamepad1.right_bumper) {
+                transfer.setPower(0.4);
                 intake.setPower(1);
             }
+            if(gamepad1.left_trigger_pressed){
+                transfer.setPower(1);
+                intake.setPower(1);
+            }
+
 
             // ---------------- Shooter PID ----------------
             double dt = timer.seconds();
@@ -108,7 +117,7 @@ public class MecanumTeleOp extends LinearOpMode {
             double currentRpm = currentDegPerSec / DEG_PER_SEC_PER_RPM;
             double shooterPower = 0;
 
-            if (gamepad1.y) {
+            if (gamepad1.right_trigger_pressed) {
                 double targetDegPerSec = TARGET_RPM * DEG_PER_SEC_PER_RPM;
                 double error = targetDegPerSec - currentDegPerSec;
 
