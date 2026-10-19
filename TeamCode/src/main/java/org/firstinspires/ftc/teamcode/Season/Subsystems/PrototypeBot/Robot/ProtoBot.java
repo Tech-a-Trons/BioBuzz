@@ -21,7 +21,7 @@ public class ProtoBot implements NextRobot {
     //public ProtoOuttake outtake = new ProtoOuttake();
 
     //public hiveTip tip = new hiveTip();
-    //public Transfer transfer = new Transfer();
+    public Transfer transfer = new Transfer();
 
     //public ColorSensor colorsensor = new ColorSensor();
 //    public SimpleServoMech servo = new SimpleServoMech();

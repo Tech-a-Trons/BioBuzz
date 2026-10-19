@@ -6,10 +6,12 @@ import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.commands.Commands.instant;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
@@ -17,6 +19,7 @@ import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import org.firstinspires.ftc.teamcode.Season.Auto.pedro.Constants;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.BaseSubsystemExamples.Simplenextrobot;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Robot.ProtoBot;
+import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.OdoPID;
 
 import dev.nextftc.robot.Telemetry;
 import dev.nextftc.robot.opmode.NextAutonomous;
@@ -27,6 +30,10 @@ public class TestR extends NextOpMode {
 
     //Calls the mechanisms "part" of the robot (See Simplenextrobot for more detail)
     ProtoBot robot;
+    OdoPID pid;
+
+    Servo hood;
+
     public TestR(ProtoBot robot) { super(robot); this.robot = robot;}
 
     //Calls follower
@@ -36,16 +43,16 @@ public class TestR extends NextOpMode {
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private final Pose start = poseFactory.of(55.7758, 8, 270);
-    private final Pose path1Start = poseFactory.of(55.7758, 8, 270);
     private final Pose path1 = poseFactory.of(55.7758, 23.8906, 270);
     private final Pose point2 = poseFactory.of(40.0281, 40.4019, 180);
     private final Pose point2Control1 = poseFactory.of(41.6965, 25.5388, 0);
     private final Pose point3 = poseFactory.of(18.3986, 40.2845, 180);
-    private final Pose point4 = poseFactory.of(55.9628, 23.5016, 270);
-    private final Pose point4Control1 = poseFactory.of(24.8407, 23.7995, 0);
+    private final Pose point4 = poseFactory.of(28.3673, 40.6224, 180);
+    private final Pose point5 = poseFactory.of(57.267, 110.6918, 90);
+    private final Pose point5Control1 = poseFactory.of(25.454, 117.1038, 0);
 
     public Path path1() {
-        return line(path1Start, path1).linear(path1Start, path1);
+        return line(start, path1).constant(path1);
     }
 
     public Path path2() {
@@ -53,28 +60,49 @@ public class TestR extends NextOpMode {
     }
 
     public Path path3() {
-        return line(point2, point3).linear(point2, point3);
+        return line(point2, point3).constant(point3);
     }
 
     public Path path4() {
-        return curve(point3, point4Control1, point4).linear(point3, point4);
+        return line(point3, point4).constant(point4);
+    }
+
+    public Path path5() {
+        return curve(point4, point5Control1, point5).linear(point4, point5);
     }
 
     //Command spause = waitMs(1000); // waits 500ms
     Command intpause = waitMs(1000); // waits 500ms
+    Command warmup = waitMs(2000);
     Command spause = waitMs(750); // waits 500ms
+
+    Command hoodboi() {
+        return instant(() -> hood.setPosition(0.3));
+    }
 
     //Sequentially calls all of the paths
     private Command autoRoutine() {
         return sequential(
+                hoodboi(),
+                pid.run(),
+                warmup,
+                robot.intake.run(),
+                robot.transfer.run(),
                 spause,
                 follow(follower, path1()),
                 robot.intake.run(),
+                robot.transfer.slow(),
                 follow(follower, path2()),
                 follow(follower, path3()),
                 intpause,
                 robot.intake.stop(),
                 follow(follower, path4()),
+                hoodboi(),
+                pid.run(),
+                follow(follower,path5()),
+                //warmup,
+                robot.intake.run(),
+                robot.transfer.run(),
                 spause
         );
     }
@@ -86,6 +114,10 @@ public class TestR extends NextOpMode {
 
         //Sets up the scheduler and calls in the Constants
         Scheduler.reset();
+
+        pid.init(hardwareMap);
+
+        hood = hardwareMap.get(Servo.class,"hood");
 
         follower = Constants.create(hardwareMap);
         follower.setPose(start);
