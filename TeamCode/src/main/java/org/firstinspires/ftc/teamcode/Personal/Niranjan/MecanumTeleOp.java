@@ -43,6 +43,7 @@ public class MecanumTeleOp extends LinearOpMode {
         DcMotor transfer = hardwareMap.dcMotor.get("transfer");
         DcMotor intake = hardwareMap.dcMotor.get("intake");
         Servo hood = hardwareMap.get(Servo.class,"hood");
+        Servo gate = hardwareMap.get(Servo.class,"gate");
 
         // Shooter: we run our own control, so disable the built-in velocity controller.
         // No setDirection() here, so the encoder and motor keep their default signs.
@@ -68,6 +69,7 @@ public class MecanumTeleOp extends LinearOpMode {
         timer.reset();
 
         while (opModeIsActive()) {
+            double x2=0;
             double y = -gamepad1.left_stick_y * 1; // Remember, Y stick value is reversed
             double x = gamepad1.left_stick_x * 1;  // Counteract imperfect strafing
             double rx = gamepad1.right_stick_x * 1;
@@ -87,23 +89,34 @@ public class MecanumTeleOp extends LinearOpMode {
             backRightMotor.setPower(backRightPower);
             if (gamepad1.dpad_up){
                 hood.setPosition(0.3);
+                gate.setPosition(0);
+
             }
             if (gamepad1.a) {
                 intake.setPower(-1);
                 transfer.setPower(-1);
             }
             if (gamepad1.left_bumper) {
+                outtakeLeft.setPower(-0.01);
                 transfer.setPower(0);
                 intake.setPower(0);
+                gate.setPosition(0.1);
             }
             if (gamepad1.right_bumper) {
-                transfer.setPower(0.4);
+                transfer.setPower(0.6);
                 intake.setPower(1);
             }
             if(gamepad1.left_trigger_pressed){
+                gate.setPosition(0);
+                sleep(50);
                 transfer.setPower(1);
                 intake.setPower(1);
             }
+            if(gamepad1.dpad_down){
+                gate.setPosition(0.1);
+
+            }
+
 
 
             // ---------------- Shooter PID ----------------
@@ -141,7 +154,7 @@ public class MecanumTeleOp extends LinearOpMode {
 
             // Apply direction here: positive PID power -> spin in the shooter direction
             outtakeLeft.setPower(SHOOTER_SIGN * shooterPower);
-
+            telemetry.addData("GATE POSNIG",gate.getPosition());
             telemetry.addData("Target RPM", TARGET_RPM);
             telemetry.addData("Current RPM", "%.1f", currentRpm);
             telemetry.addData("Raw velocity (deg/s)", "%.1f", rawDegPerSec);
