@@ -108,7 +108,7 @@ public class MecanumTeleOp extends LinearOpMode {
             }
             if(gamepad1.left_trigger_pressed){
                 gate.setPosition(0);
-                sleep(50);
+                sleep(250);
                 transfer.setPower(1);
                 intake.setPower(1);
             }
