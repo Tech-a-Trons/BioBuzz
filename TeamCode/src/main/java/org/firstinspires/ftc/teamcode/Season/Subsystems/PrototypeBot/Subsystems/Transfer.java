@@ -11,7 +11,7 @@ public class Transfer implements Mechanism {
 
     public Command run() { return instant(() -> motor.setThrottle(1)); }
     public Command mid() {return instant(() -> motor.setThrottle(0.5));}
-    public Command slow() {return instant(() -> motor.setThrottle(0.25));}
+    public Command slow() {return instant(() -> motor.setThrottle(0.3));}
 
     public Command stop() { return instant(() -> motor.setThrottle(0.0)); }
     public Command reverse() { return instant(() -> motor.setThrottle(-1)); }

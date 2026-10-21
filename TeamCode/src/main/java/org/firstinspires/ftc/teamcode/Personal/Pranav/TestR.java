@@ -30,9 +30,10 @@ public class TestR extends NextOpMode {
 
     //Calls the mechanisms "part" of the robot (See Simplenextrobot for more detail)
     ProtoBot robot;
-    OdoPID pid;
+    OdoPID pid = new OdoPID();
 
     Servo hood;
+    Servo gate;
 
     public TestR(ProtoBot robot) { super(robot); this.robot = robot;}
 
@@ -44,12 +45,12 @@ public class TestR extends NextOpMode {
 
     private final Pose start = poseFactory.of(55.7758, 8, 270);
     private final Pose path1 = poseFactory.of(55.7758, 23.8906, 270);
-    private final Pose point2 = poseFactory.of(40.0281, 40.4019, 180);
+    private final Pose point2 = poseFactory.of(40.0281, 36.5897, 180);
     private final Pose point2Control1 = poseFactory.of(41.6965, 25.5388, 0);
-    private final Pose point3 = poseFactory.of(18.3986, 40.2845, 180);
-    private final Pose point4 = poseFactory.of(28.3673, 40.6224, 180);
-    private final Pose point5 = poseFactory.of(57.267, 110.6918, 90);
-    private final Pose point5Control1 = poseFactory.of(25.454, 117.1038, 0);
+    private final Pose point3 = poseFactory.of(18.1744, 36.4723, 180);
+    private final Pose point4 = poseFactory.of(28.5915, 37.0344, 180);
+    private final Pose point5 = poseFactory.of(54.3518, 108.225, 90);
+    private final Pose point5Control1 = poseFactory.of(25.2278, 113.2785, 0);
 
     public Path path1() {
         return line(start, path1).constant(path1);
@@ -72,56 +73,83 @@ public class TestR extends NextOpMode {
     }
 
     //Command spause = waitMs(1000); // waits 500ms
-    Command intpause = waitMs(1000); // waits 500ms
-    Command warmup = waitMs(2000);
-    Command spause = waitMs(750); // waits 500ms
+    Command intpause() { return waitMs(1000); }
+    Command warmup()   { return waitMs(1775); }
+    Command quick()    { return waitMs(775); }
+    Command spause()   { return waitMs(2000); }
+    Command gpause()   { return waitMs(1000); }
 
     Command hoodboi() {
         return instant(() -> hood.setPosition(0.3));
+    }
+
+    Command gateopen() {
+        return instant(() -> gate.setPosition(0));
+    }
+
+    Command gateclose() {
+        return instant(() -> gate.setPosition(0.1));
     }
 
     //Sequentially calls all of the paths
     private Command autoRoutine() {
         return sequential(
                 hoodboi(),
+                gateopen(),
+                gpause(),
                 pid.run(),
-                warmup,
+                warmup(),
                 robot.intake.run(),
                 robot.transfer.run(),
-                spause,
+                spause(),
+                pid.stop(),
+                robot.intake.stop(),
+                robot.transfer.stop(),
+                gateclose(),
                 follow(follower, path1()),
                 robot.intake.run(),
                 robot.transfer.slow(),
                 follow(follower, path2()),
                 follow(follower, path3()),
-                intpause,
+                intpause(),
                 robot.intake.stop(),
+                robot.transfer.stop(),
                 follow(follower, path4()),
                 hoodboi(),
+                gateopen(),
+                gpause(),
                 pid.run(),
                 follow(follower,path5()),
-                //warmup,
+                quick(),
                 robot.intake.run(),
                 robot.transfer.run(),
-                spause
+                spause(),
+                pid.stop(),
+                robot.transfer.stop(),
+                robot.intake.stop(),
+                gateclose()
         );
     }
+
+    private boolean initialized = false;
 
     //Runs periodically in init
     @Override
     public void disabledPeriodic() {
         Telemetry.log("Status", "Init");
+        if (initialized) return;
+        initialized = true;
 
-        //Sets up the scheduler and calls in the Constants
         Scheduler.reset();
+        hood = hardwareMap.get(Servo.class, "hood");
 
-        pid.init(hardwareMap);
+        gate = hardwareMap.get(Servo.class,"gate");
 
-        hood = hardwareMap.get(Servo.class,"hood");
-
+        pid.init(hardwareMap);            // original signature
         follower = Constants.create(hardwareMap);
         follower.setPose(start);
         follower.update();
+        pid.setFollower(follower);        // only needed if you use OdoRun()
     }
 
     //Runs once at start
@@ -140,6 +168,7 @@ public class TestR extends NextOpMode {
 
         //Starts follower and auto path
         follower.update();
+        pid.update();                     // required, because the Commands only enable the PID
         Scheduler.execute();
 
         telemetry.addData("X", follower.pose().x());

@@ -23,7 +23,7 @@ public class MecanumTeleOp extends LinearOpMode {
     private static final double kI = 0.0;      // start at 0, add only if it settles below target
     private static final double kD = 0.0;      // start at 0, add only if it oscillates
 
-    private static final double TARGET_RPM = 28.5;
+    private static final double TARGET_RPM = 26;
     private static final double DEG_PER_SEC_PER_RPM = 6.0; // RPM x 6 = deg/s
     private static final double MAX_INTEGRAL = 0.3;        // anti-windup limit (in power units)
 
@@ -107,10 +107,11 @@ public class MecanumTeleOp extends LinearOpMode {
                 intake.setPower(1);
             }
             if(gamepad1.left_trigger_pressed){
-                gate.setPosition(0);
-                sleep(250);
                 transfer.setPower(1);
                 intake.setPower(1);
+//                sleep(70);
+//                gate.setPosition(0);
+
             }
             if(gamepad1.dpad_down){
                 gate.setPosition(0.1);
