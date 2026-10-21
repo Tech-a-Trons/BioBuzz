@@ -7,8 +7,8 @@ import dev.nextftc.robot.Mechanism;
 
 public class laserBreak implements Mechanism {
 
-    private boolean laserDetect = true;
-    private DigitalChannel laserInput;
+    public boolean laserDetect = true;
+    public DigitalChannel laserInput;
     public boolean laserInputState = false;
 
     public laserBreak() {}
@@ -25,9 +25,5 @@ public class laserBreak implements Mechanism {
     @Override
     public void periodic() {
         Mechanism.super.periodic();
-
-        if (laserDetect && laserInput != null) {
-            laserInputState = laserInput.getState();
-        }
     }
 }

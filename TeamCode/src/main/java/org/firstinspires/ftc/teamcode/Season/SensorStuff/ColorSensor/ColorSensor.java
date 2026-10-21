@@ -13,7 +13,7 @@ public class ColorSensor implements Mechanism {
     private Servo rgbindicator;
 
     private boolean initialized = false;
-    private final boolean colorDetect = true;
+    public final boolean colorDetect = true;
 
     private float chue, csat, cval;
     private float red, green, blue, alpha;
@@ -100,9 +100,7 @@ public class ColorSensor implements Mechanism {
 
     @Override
     public void periodic() {
-        if (colorDetect) {
-            getColor();
-        }
+
     }
 
     // ================= GETTERS =================
