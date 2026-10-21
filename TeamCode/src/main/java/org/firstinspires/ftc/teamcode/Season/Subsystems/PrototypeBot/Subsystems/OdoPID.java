@@ -100,7 +100,7 @@ public class OdoPID {
             if ("BLUE".equals(alliance)) { xt = 84; yt = (y >= 70.75) ? 82 : 56; }
             else if ("RED".equals(alliance)) { xt = 58; yt = (y >= 70.75) ? 82 : 56; }
             lastDist = Math.hypot(xt - x, yt - y);
-            targetRpm = 0.84375 * lastDist;
+            targetRpm = 1.13636 * lastDist;
         }
 
         // ---------------- Shooter PID (copied from MecanumTeleOp) ----------------
