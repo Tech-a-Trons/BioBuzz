@@ -41,12 +41,12 @@ public class hiveTip implements Mechanism {
     public boolean blueFront = false;
     public boolean redFront = false;
 
-    public void checkRed() {
-        redFront = Redfront.contains(tagId) || Redback.contains(tagId);
+    public boolean checkRed() {
+        return redFront = Redfront.contains(tagId) || Redback.contains(tagId);
     }
 
-    public void checkBlue() {
-        blueFront = Bluefront.contains(tagId) || Blueback.contains(tagId);
+    public boolean checkBlue() {
+        return blueFront = Bluefront.contains(tagId) || Blueback.contains(tagId);
     }
 
     @Override
@@ -65,8 +65,5 @@ public class hiveTip implements Mechanism {
                 tagId = 0;
             }
         }
-
-        checkRed();
-        checkBlue();
     }
 }
