@@ -21,6 +21,8 @@ public class elementDetect implements Mechanism {
 
     public boolean elementDetect = true;
     public final List<Integer> rampElements = new ArrayList<>(Arrays.asList(null, null, null, null));
+
+
     // 1 = pollen
     // 2 = Red_Nectar
     // 3 = Blue_Nectar
@@ -36,6 +38,13 @@ public class elementDetect implements Mechanism {
 
     public void periodic() {
         Mechanism.super.periodic();
+        if (colorSensor.colorDetect) {
+            colorSensor.getColor();
+        }
+
+        if (laserBreak.laserDetect && laserBreak.laserInput != null) {
+            laserBreak.laserInputState = laserBreak.laserInput.getState();
+        }
         if (elementDetect) {
             if (!laserBreak.laserInputState) {
                 colorSensor.color_counted = false;

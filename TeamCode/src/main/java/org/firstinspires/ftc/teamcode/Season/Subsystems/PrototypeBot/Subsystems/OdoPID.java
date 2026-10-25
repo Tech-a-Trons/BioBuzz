@@ -1,15 +1,12 @@
 package org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems;
 
 import static com.pedropathing.ivy.commands.Commands.instant;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -17,161 +14,105 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Season.Auto.pedro.Constants;
 
-import java.util.Objects;
-
 public class OdoPID {
 
-    //Constants from Niranjan's tele
-    // ---- Shooter PID constants (tune these) ----
+    // ---- Shooter PID constants (same as MecanumTeleOp) ----
     private static final double kS = 0.12;     // power to overcome friction
-    private static final double kV = 0.001;   // power per RPM
-    private static final double kP = 0.02;    // error is in deg/s
-    private static final double kI = 0.0;      // start at 0, add only if it settles below target
-    private static final double kD = 0.0;      // start at 0, add only if it oscillates
+    private static final double kV = 0.001;    // power per RPM
+    private static final double kP = 0.025;     // error is in deg/s
+    private static final double kI = 0.0;
+    private static final double kD = 0.0;
 
-    private static double TARGET_RPM = 27;
     private static final double DEG_PER_SEC_PER_RPM = 6.0; // RPM x 6 = deg/s
-    private static final double MAX_INTEGRAL = 0.3;        // anti-windup limit (in power units)
+    private static final double MAX_INTEGRAL = 0.3;        // anti-windup limit
+    private static final double SHOOTER_SIGN = -1;         // reverses final motor power only
 
-    // Shooter direction is handled here instead of setDirection().
-    // The PID runs on positive numbers; this sign only reverses the final motor power.
-    // -1 = spin the motor in the "reverse" direction. If the wheel spins the wrong way, change to 1.
-    private static final double SHOOTER_SIGN = -1;
-
+    private double targetRpm = 25;   // same default as the TeleOp
+    private boolean enabled = false;
+    private boolean useOdo = false;
 
     Follower follower;
-
     double integral = 0;
     double lastError = 0;
     ElapsedTime timer = new ElapsedTime();
-
     DcMotorEx outtakeLeft;
+    public String alliance = "EMPTY";
+
+    // for telemetry
+    private double currentRpm = 0, rawDegPerSec = 0, shooterPower = 0, lastDist = 0;
 
     public void init(HardwareMap hardwareMap) {
-        DcMotorEx outtakeLeft = hardwareMap.get(DcMotorEx.class, "outtakeleft");
+        outtakeLeft = hardwareMap.get(DcMotorEx.class, "outtakeleft"); // sets the FIELD
         outtakeLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         outtakeLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        outtakeLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
+        outtakeLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         follower = Constants.create(hardwareMap);
     }
+
+    // Optional: share TestR's follower instead of the one made in init()
+    public void setFollower(Follower f) { this.follower = f; }
 
     public void reset() {
         integral = 0;
         lastError = 0;
-
-        outtakeLeft.setPower(0);
+        enabled = false;
+        shooterPower = 0;
+        if (outtakeLeft != null) outtakeLeft.setPower(0);
     }
 
+    // ---- Commands: they only turn the PID on/off; update() does the work ----
     public Command run() {
-        double dt = timer.seconds();
-        timer.reset();
-
-        double currentDegPerSec = outtakeLeft.getVelocity(AngleUnit.DEGREES);
-        double currentRpm = currentDegPerSec / DEG_PER_SEC_PER_RPM;
-        double shooterPower = 0;
-
-        double targetDegPerSec = TARGET_RPM * DEG_PER_SEC_PER_RPM;
-        double error = targetDegPerSec - currentDegPerSec;
-
-        // Integral with anti-windup
-        if (dt > 0) {
-            integral += error * dt * kI;
-            integral = Range.clip(integral, -MAX_INTEGRAL, MAX_INTEGRAL);
-        }
-
-        double derivative = (dt > 0) ? (error - lastError) / dt : 0;
-        lastError = error;
-
-        double feedforward = kS + kV * TARGET_RPM;
-        shooterPower = feedforward + kP * error + integral + kD * derivative;
-        shooterPower = Range.clip(shooterPower, 0, 1);
-
-        shooterPower = shooterPower * SHOOTER_SIGN;
-
-        final double pwrf = shooterPower;
-
-        return instant(() -> outtakeLeft.setPower(pwrf));
-    }
-
-    public String alliance = "EMPTY";
-
-    //Later, this will get input from the auto for Alliance
-//    public void Alliance() {
-//        alliance = "RED";
-//        if (gamepad1.dpad_left) {
-//            alliance = "BLUE";
-//        }
-//    }
-
-    public void Localization() {
-        Pose LocPose = new Pose( 79, 8.5, Math.toRadians(90));
-        // On the fly Pose creation, we dont recommend this for Autonomous. Only accepts radians for heading
-        follower.setPose(LocPose); // overrides our pose
+        return instant(() -> start(false));
     }
 
     public Command OdoRun() {
+        return instant(() -> start(true));
+    }
 
-        follower.update();               // must run every loop so the pose stays current
-        Pose robotPose = follower.pose();
+    public Command stop() {
+        return instant(this::reset);
+    }
 
-        double x = robotPose.x();              // inches
-        double y = robotPose.y();              // inches
+    private void start(boolean odo) {
+        useOdo = odo;
+        enabled = true;
+        integral = 0;
+        lastError = 0;
+        timer.reset();
+    }
 
-        double xt = 0;
-        double yt = 0;
+    // ---- Call every loop from periodic() ----
+    public void update() {
+        if (outtakeLeft == null) return;
 
-        if (Objects.equals(alliance, "BLUE")) {
-            if (y >= 70.75) {
-                xt = 84;
-                yt = 82;
-            } else if (y < 70.75) {
-                xt = 84;
-                yt = 56;
-            }
-        } else if (Objects.equals(alliance, "RED")) {
-            if (y >= 70.75) {
-                xt = 58;
-                yt = 82;
-            } else if (y < 70.75) {
-                xt = 58;
-                yt = 56;
-            }
+        // Not shooting: reset controller state and cut power (same as TeleOp's else branch)
+        if (!enabled) {
+            integral = 0;
+            lastError = 0;
+            shooterPower = 0;
+            outtakeLeft.setPower(0);
+            return;
         }
 
-//        if (x >= 70.75) {
-//            if (y >= 70.75) {
-//                xt = 84;
-//                yt = 82;
-//            } else if (y < 70.75) {
-//                xt = 84;
-//                yt = 56;
-//            }
-//        } else if (x < 70.75) {
-//            if (y >= 70.75) {
-//                xt = 58;
-//                yt = 82;
-//            } else if (y < 70.75) {
-//                xt = 58;
-//                yt = 56;
-//            }
-//        }
+        if (useOdo) {
+            Pose p = follower.pose();
+            double x = p.x(), y = p.y(), xt = 0, yt = 0;
+            if ("BLUE".equals(alliance)) { xt = 84; yt = (y >= 70.75) ? 82 : 56; }
+            else if ("RED".equals(alliance)) { xt = 58; yt = (y >= 70.75) ? 82 : 56; }
+            lastDist = Math.hypot(xt - x, yt - y);
+            targetRpm = 1.13636 * lastDist;
+        }
 
-        double xdiff = xt - x;
-        double ydiff = yt - y;
-
-        double dist = Math.sqrt(Math.pow(xdiff,2)+Math.pow(ydiff,2));
-
-        TARGET_RPM = 0.84375*(dist)+0;
-
+        // ---------------- Shooter PID (copied from MecanumTeleOp) ----------------
         double dt = timer.seconds();
         timer.reset();
 
-        double currentDegPerSec = outtakeLeft.getVelocity(AngleUnit.DEGREES);
-        double currentRpm = currentDegPerSec / DEG_PER_SEC_PER_RPM;
-        double shooterPower = 0;
+        rawDegPerSec = outtakeLeft.getVelocity(AngleUnit.DEGREES);
+        // Magnitude so the PID always sees a positive speed; the sign is applied at the end
+        double currentDegPerSec = Math.abs(rawDegPerSec);
+        currentRpm = currentDegPerSec / DEG_PER_SEC_PER_RPM;
 
-        double targetDegPerSec = TARGET_RPM * DEG_PER_SEC_PER_RPM;
+        double targetDegPerSec = targetRpm * DEG_PER_SEC_PER_RPM;
         double error = targetDegPerSec - currentDegPerSec;
 
         // Integral with anti-windup
@@ -183,22 +124,17 @@ public class OdoPID {
         double derivative = (dt > 0) ? (error - lastError) / dt : 0;
         lastError = error;
 
-        double feedforward = kS + kV * TARGET_RPM;
+        double feedforward = kS + kV * targetRpm;
         shooterPower = feedforward + kP * error + integral + kD * derivative;
         shooterPower = Range.clip(shooterPower, 0, 1);
 
-        shooterPower = shooterPower * SHOOTER_SIGN;
-
-        final double pwrf = shooterPower;
-
-        telemetry.addData("Robot X", x);
-        telemetry.addData("Robot Y", y);
-        telemetry.addData("Robot XT", xt);
-        telemetry.addData("Robot YT", yt);
-        telemetry.addData("Dist to goal", dist);
-        telemetry.update();
-
-        return instant(() -> outtakeLeft.setPower(pwrf));
+        outtakeLeft.setPower(SHOOTER_SIGN * shooterPower);
     }
 
+    // Getters so TestR can print telemetry (the Blocks telemetry import is null in normal opmodes)
+    public double getTargetRpm()  { return targetRpm; }
+    public double getCurrentRpm() { return currentRpm; }
+    public double getRawVelocity(){ return rawDegPerSec; }
+    public double getPower()      { return shooterPower; }
+    public double getLastDist()   { return lastDist; }
 }
