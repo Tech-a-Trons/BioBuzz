@@ -88,7 +88,7 @@ public class MecanumTeleOp extends LinearOpMode {
             frontRightMotor.setPower(frontRightPower);
             backRightMotor.setPower(backRightPower);
             if (gamepad1.dpad_up){
-                hood.setPosition(0.3);
+                hood.setPosition(0);
                 gate.setPosition(0);
 
             }
@@ -100,20 +100,20 @@ public class MecanumTeleOp extends LinearOpMode {
                 outtakeLeft.setPower(-0.01);
                 transfer.setPower(0);
                 intake.setPower(0);
-                gate.setPosition(0.1);
+                gate.setPosition(0.11);
             }
             if (gamepad1.right_bumper) {
-                transfer.setPower(0.6);
+                transfer.setPower(-0.6);
                 intake.setPower(1);
             }
             if(gamepad1.left_trigger_pressed){
-                gate.setPosition(0);
+                gate.setPosition(0.11);
                 sleep(250);
-                transfer.setPower(1);
+                transfer.setPower(-1);
                 intake.setPower(1);
             }
             if(gamepad1.dpad_down){
-                gate.setPosition(0.1);
+                gate.setPosition(0.11);
 
             }
 
