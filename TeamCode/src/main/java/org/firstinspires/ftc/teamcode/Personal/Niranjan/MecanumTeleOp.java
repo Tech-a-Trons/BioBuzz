@@ -88,13 +88,13 @@ public class MecanumTeleOp extends LinearOpMode {
             frontRightMotor.setPower(frontRightPower);
             backRightMotor.setPower(backRightPower);
             if (gamepad1.dpad_up){
-                hood.setPosition(0.13);
+                hood.setPosition(0.2);
                 gate.setPosition(0.11);
 
             }
             if (gamepad1.a) {
-                intake.setPower(1);
-                transfer.setPower(-1);
+                intake.setPower(-1);
+                transfer.setPower(1);
             }
             if (gamepad1.left_bumper) {
                 outtakeLeft.setPower(-0.01);
