@@ -23,7 +23,7 @@ public class MecanumTeleOp extends LinearOpMode {
     private static final double kI = 0.0;      // start at 0, add only if it settles below target
     private static final double kD = 0.0;      // start at 0, add only if it oscillates
 
-    private static final double TARGET_RPM = 28.5;
+    private static final double TARGET_RPM = 38;
     private static final double DEG_PER_SEC_PER_RPM = 6.0; // RPM x 6 = deg/s
     private static final double MAX_INTEGRAL = 0.3;        // anti-windup limit (in power units)
 
@@ -48,6 +48,7 @@ public class MecanumTeleOp extends LinearOpMode {
         // Shooter: we run our own control, so disable the built-in velocity controller.
         // No setDirection() here, so the encoder and motor keep their default signs.
         DcMotorEx outtakeLeft = hardwareMap.get(DcMotorEx.class, "outtakeleft");
+        outtakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         outtakeLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         outtakeLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         outtakeLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -88,8 +89,8 @@ public class MecanumTeleOp extends LinearOpMode {
             frontRightMotor.setPower(frontRightPower);
             backRightMotor.setPower(backRightPower);
             if (gamepad1.dpad_up){
-                hood.setPosition(0);
-                gate.setPosition(0);
+                hood.setPosition(0.13);
+                gate.setPosition(0.11);
 
             }
             if (gamepad1.a) {
@@ -100,20 +101,21 @@ public class MecanumTeleOp extends LinearOpMode {
                 outtakeLeft.setPower(-0.01);
                 transfer.setPower(0);
                 intake.setPower(0);
-                gate.setPosition(0.11);
+                gate.setPosition(0);
             }
             if (gamepad1.right_bumper) {
-                transfer.setPower(-0.6);
+                transfer.setPower(-0.8);
                 intake.setPower(1);
             }
             if(gamepad1.left_trigger_pressed){
-                gate.setPosition(0.11);
+                gate.setPosition(0.09);
                 sleep(250);
                 transfer.setPower(-1);
                 intake.setPower(1);
             }
             if(gamepad1.dpad_down){
                 gate.setPosition(0.11);
+                hood.setPosition(0);
 
             }
 
