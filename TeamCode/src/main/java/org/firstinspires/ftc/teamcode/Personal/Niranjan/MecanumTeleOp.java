@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@TeleOp
+@TeleOp(name = "ProtoBotCode")
 public class MecanumTeleOp extends LinearOpMode {
 
     // ---- Shooter PID constants (tune these) ----
@@ -19,11 +19,11 @@ public class MecanumTeleOp extends LinearOpMode {
     // with ShooterDiagnostic: kS = power where it just starts moving, kV = extra power per RPM
     private static final double kS = 0.12;     // power to overcome friction
     private static final double kV = 0.001;   // power per RPM
-    private static final double kP = 0.02;    // error is in deg/s
-    private static final double kI = 0.0;      // start at 0, add only if it settles below target
-    private static final double kD = 0.0;      // start at 0, add only if it oscillates
+    private static final double kP = 0.027;    // error is in deg/s
+    private static final double kI = 0.01;      // start at 0, add only if it settles below target
+    private static final double kD = 0.03;      // start at 0, add only if it oscillates
 
-    private static final double TARGET_RPM = 38;
+    private static final double TARGET_RPM = 34;
     private static final double DEG_PER_SEC_PER_RPM = 6.0; // RPM x 6 = deg/s
     private static final double MAX_INTEGRAL = 0.3;        // anti-windup limit (in power units)
 
@@ -70,7 +70,6 @@ public class MecanumTeleOp extends LinearOpMode {
         timer.reset();
 
         while (opModeIsActive()) {
-            double x2=0;
             double y = -gamepad1.left_stick_y * 1; // Remember, Y stick value is reversed
             double x = gamepad1.left_stick_x * 1;  // Counteract imperfect strafing
             double rx = gamepad1.right_stick_x * 1;
@@ -94,7 +93,7 @@ public class MecanumTeleOp extends LinearOpMode {
 
             }
             if (gamepad1.a) {
-                intake.setPower(-1);
+                intake.setPower(1);
                 transfer.setPower(-1);
             }
             if (gamepad1.left_bumper) {
