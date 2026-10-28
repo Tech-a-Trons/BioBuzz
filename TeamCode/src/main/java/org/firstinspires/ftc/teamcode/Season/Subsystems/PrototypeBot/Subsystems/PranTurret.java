@@ -24,6 +24,9 @@ public class PranTurret {
     private static final double GEAR_RATIO = 3.0;   // motor rotations per turret rotation
     private static final double TICKS_PER_DEG = MOTOR_CPR * GEAR_RATIO / 360.0;
     private static final double MIN_DEG = -180, MAX_DEG = 180; // your turret's travel limits
+    private static final double DEADBAND_ENTER = 0.4; // degrees: stop when error gets this small
+    private static final double DEADBAND_EXIT  = 0.75; // degrees: resume only when error exceeds this
+    private boolean settled = false;
 
     DcMotorEx turret;
     Follower follower;
@@ -64,6 +67,21 @@ public class PranTurret {
 
         double currentDeg = turret.getCurrentPosition() / TICKS_PER_DEG;
         double error = targetDeg - currentDeg;
+        double absErr = Math.abs(error);
+
+        // Hysteresis: once settled, stay settled until error grows past the exit threshold
+        if (settled) {
+            if (absErr > DEADBAND_EXIT) settled = false;
+        } else if (absErr < DEADBAND_ENTER) {
+            settled = true;
+        }
+
+        if (settled) {
+            integral = 0;          // don't wind up while holding
+            lastError = error;     // avoid a derivative spike when we resume
+            turret.setPower(0);
+            return;
+        }
 
         if (dt > 0) {
             integral = Range.clip(integral + error * dt * kI, -MAX_INTEGRAL, MAX_INTEGRAL);
@@ -72,8 +90,7 @@ public class PranTurret {
         lastError = error;
 
         double power = kP * error + integral + kD * derivative;
-        power += Math.signum(error) * kS;
-        if (Math.abs(error) < 0.5) power = 0; // deadband to avoid jitter
+        power += Math.signum(error) * kS * Math.min(1.0, absErr / 3.0); // fade kS out near the target
 
         turret.setPower(Range.clip(power, -1, 1));
     }
