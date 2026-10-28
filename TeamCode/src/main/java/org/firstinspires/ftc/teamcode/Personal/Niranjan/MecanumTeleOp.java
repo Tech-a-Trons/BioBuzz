@@ -68,7 +68,7 @@ public class MecanumTeleOp extends LinearOpMode {
         double lastError = 0;
         ElapsedTime timer = new ElapsedTime();
 
-        follower.setPose(new Pose(72, 72, 0)); // your real start pose
+        follower.setPose(new Pose(70.75, 70.75, 270)); // your real start pose
 
         turret.init(hardwareMap, follower, "RED");
 
