@@ -22,8 +22,8 @@ public class Turret implements Mechanism {
         motor.getPositionConstants().withP(0.1).withD(0.0);
     }
 
-    public static double xt = 60;
-    public static double yt = 60;
+    public static double xt = 57;
+    public static double yt = 57;
     public static double offsetDeg = 0;
 
     @Override
