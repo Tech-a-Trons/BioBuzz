@@ -48,17 +48,17 @@ public class TestR extends NextOpMode {
     private final Pose point2Control1 = poseFactory.of(41.6965, 25.5388, 0);
     private final Pose point3 = poseFactory.of(18.1744, 36.4723, 180);
     private final Pose point4 = poseFactory.of(28.5915, 37.0344, 180);
-    private final Pose point5 = poseFactory.of(54.3518, 108.225, 90);
+    private final Pose point5 = poseFactory.of(58, 108.225, 90);
     private final Pose point5Control1 = poseFactory.of(25.2278, 113.2785, 0);
-    private final Pose point6 = poseFactory.of(48.9558, 113.1383, 90);
-    private final Pose point7 = poseFactory.of(48.8392, 120.4572, 90);
-    private final Pose point8 = poseFactory.of(48.6531, 113.4663, 90);
-    private final Pose point9 = poseFactory.of(54.309, 108.0913, 90);
-    private final Pose point10 = poseFactory.of(55.6124, 16.1236, 180);
+    private final Pose point6 = poseFactory.of(48.7315, 108.2049, 90);
+    private final Pose point7 = poseFactory.of(48.5495, 115.521, 90);
+    private final Pose point8 = poseFactory.of(48.6531, 108.3086, 90);
+    private final Pose point9 = poseFactory.of(58, 107.867, 90);
+    private final Pose point10 = poseFactory.of(55.6124, 0.1617, 180);
     private final Pose point10Control1 = poseFactory.of(77.8076, 75.0758, 0);
-    private final Pose point11 = poseFactory.of(18.2275, 16.2338, 180);
-    private final Pose point12 = poseFactory.of(55.7444, 16.139, 180);
-    private final Pose point13 = poseFactory.of(56.2591, 23.4045, 270);
+    private final Pose point11 = poseFactory.of(6, -3, 180);
+    private final Pose point12 = poseFactory.of(55.5456, -5, 180);
+    private final Pose point13 = poseFactory.of(56.0349, 15.7801, 270);
 
     public Path path1() {
         return line(start, path1).constant(path1);
@@ -154,7 +154,7 @@ public class TestR extends NextOpMode {
 //                intpause(),
 //                robot.intake.stop(),
 //                robot.transfer.stop(),
-//                follow(follower, path4()),
+                follow(follower, path4()),
 //                hoodboi(),
 //                gateopen(),
 //                gpause(),
@@ -177,13 +177,22 @@ public class TestR extends NextOpMode {
 //                robot.intake.stop(),
 //                robot.transfer.stop(),
 //                pid.run(),
-                follow(follower,path9())//,
+                follow(follower,path9()),
 //                hoodboi(),
 //                gateopen(),
 //                gpause(),
 //                robot.transfer.run(),
 //                robot.intake.run(),
 //                spause()
+                robot.intake.run(),
+                robot.transfer.slow(),
+                follow(follower,path10()),
+                follow(follower,path11()),
+                intpause(),
+                follow(follower,path12()),
+                robot.intake.stop(),
+                robot.transfer.stop(),
+                follow(follower,path13())
 
         );
     }

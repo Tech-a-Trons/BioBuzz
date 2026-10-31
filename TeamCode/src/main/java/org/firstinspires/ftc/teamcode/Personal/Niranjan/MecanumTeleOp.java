@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Personal.Niranjan;
 
+import com.pedropathing.follower.Follower;
+import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,6 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.PranTurret;
 
 @TeleOp(name = "ProtoBotCode")
 public class MecanumTeleOp extends LinearOpMode {
@@ -31,6 +34,8 @@ public class MecanumTeleOp extends LinearOpMode {
     // The PID runs on positive numbers; this sign only reverses the final motor power.
     // -1 = spin the motor in the "reverse" direction. If the wheel spins the wrong way, change to 1.
     private static final double SHOOTER_SIGN = -1;
+    PranTurret turret = new PranTurret();
+    Follower follower;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -63,6 +68,10 @@ public class MecanumTeleOp extends LinearOpMode {
         double lastError = 0;
         ElapsedTime timer = new ElapsedTime();
 
+        follower.setPose(new Pose(70.75, 70.75, 270)); // your real start pose
+
+        turret.init(hardwareMap, follower, "RED");
+
         waitForStart();
 
         if (isStopRequested()) return;
@@ -70,6 +79,9 @@ public class MecanumTeleOp extends LinearOpMode {
         timer.reset();
 
         while (opModeIsActive()) {
+            follower.update();
+            turret.update();
+
             double y = -gamepad1.left_stick_y * 1; // Remember, Y stick value is reversed
             double x = gamepad1.left_stick_x * 1;  // Counteract imperfect strafing
             double rx = gamepad1.right_stick_x * 1;
