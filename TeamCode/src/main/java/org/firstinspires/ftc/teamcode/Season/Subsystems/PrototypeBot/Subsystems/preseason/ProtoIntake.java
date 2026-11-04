@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems;
+package org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.preseason;
 
 import com.pedropathing.ivy.Command;
 
 import dev.nextftc.hardware.actuators.NextMotor;
 import dev.nextftc.robot.Mechanism;
 
-public class EncoderIntake implements Mechanism {
+public class ProtoIntake implements Mechanism {
     NextMotor motor = new NextMotor("intake");
 
 

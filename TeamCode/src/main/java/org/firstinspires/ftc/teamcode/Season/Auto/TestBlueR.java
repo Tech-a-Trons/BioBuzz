@@ -18,7 +18,7 @@ import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
 import org.firstinspires.ftc.teamcode.Season.Auto.pedro.Constants;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Robot.ProtoBot;
-import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.OdoPID;
+import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.preseason.OdoPID;
 
 import dev.nextftc.robot.Telemetry;
 import dev.nextftc.robot.opmode.NextAutonomous;

@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.Personal.Niranjan;
 
-import com.pedropathing.follower.Follower;
-import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,7 +10,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.PranTurret;
 
 @TeleOp(name = "ProtoBotCode")
 public class MecanumTeleOp extends LinearOpMode {
@@ -26,7 +23,7 @@ public class MecanumTeleOp extends LinearOpMode {
     private static final double kI = 0.0;      // start at 0, add only if it settles below target
     private static final double kD = 0.03;      // start at 0, add only if it oscillates
 
-    private static final double TARGET_RPM = 32;
+    private static final double TARGET_RPM = 23;
     private static final double DEG_PER_SEC_PER_RPM = 6.0; // RPM x 6 = deg/s
     private static final double MAX_INTEGRAL = 0.3;        // anti-windup limit (in power units)
 
@@ -34,8 +31,8 @@ public class MecanumTeleOp extends LinearOpMode {
     // The PID runs on positive numbers; this sign only reverses the final motor power.
     // -1 = spin the motor in the "reverse" direction. If the wheel spins the wrong way, change to 1.
     private static final double SHOOTER_SIGN = -1;
-    PranTurret turret = new PranTurret();
-    Follower follower;
+//    PranTurret turret = new PranTurret();
+//    Follower follower;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -48,8 +45,7 @@ public class MecanumTeleOp extends LinearOpMode {
         DcMotor transfer = hardwareMap.dcMotor.get("transfer");
         DcMotor intake = hardwareMap.dcMotor.get("intake");
         Servo hood = hardwareMap.get(Servo.class,"hood");
-        Servo gate = hardwareMap.get(Servo.class,"gate");
-
+        Servo gate = hardwareMap.get(Servo.class, "gate");
         // Shooter: we run our own control, so disable the built-in velocity controller.
         // No setDirection() here, so the encoder and motor keep their default signs.
         DcMotorEx outtakeLeft = hardwareMap.get(DcMotorEx.class, "outtakeleft");
@@ -67,10 +63,10 @@ public class MecanumTeleOp extends LinearOpMode {
         double integral = 0;
         double lastError = 0;
         ElapsedTime timer = new ElapsedTime();
-
-        follower.setPose(new Pose(70.75, 70.75, 270)); // your real start pose
-
-        turret.init(hardwareMap, follower, "RED");
+//
+//        follower.setPose(new Pose(70.75, 70.75, 270)); // your real start pose
+//
+//        turret.init(hardwareMap, follower, "RED");
 
         waitForStart();
 
@@ -79,8 +75,8 @@ public class MecanumTeleOp extends LinearOpMode {
         timer.reset();
 
         while (opModeIsActive()) {
-            follower.update();
-            turret.update();
+//            follower.update();
+//            turret.update();
 
             double y = -gamepad1.left_stick_y * 1; // Remember, Y stick value is reversed
             double x = gamepad1.left_stick_x * 1;  // Counteract imperfect strafing
@@ -101,7 +97,7 @@ public class MecanumTeleOp extends LinearOpMode {
             backRightMotor.setPower(backRightPower);
             if (gamepad1.dpad_up){
                 hood.setPosition(0.2);
-                gate.setPosition(0.11);
+                gate.setPosition(0.15);
 
             }
             if (gamepad1.a) {
@@ -119,7 +115,7 @@ public class MecanumTeleOp extends LinearOpMode {
                 intake.setPower(1);
             }
             if(gamepad1.left_trigger_pressed){
-                gate.setPosition(0.09);
+                gate.setPosition(0.17);
                 sleep(250);
                 transfer.setPower(-1);
                 intake.setPower(1);
