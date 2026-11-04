@@ -1,6 +1,4 @@
-package org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.comp1;
-
-import static com.pedropathing.ivy.commands.Commands.infinite;
+package org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;

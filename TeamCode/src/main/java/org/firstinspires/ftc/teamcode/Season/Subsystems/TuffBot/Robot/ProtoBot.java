@@ -1,15 +1,15 @@
-package org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Robot;
+package org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Robot;
 
 import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Season.SensorStuff.Limelight.hiveTip;
-import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.comp1.Drivetrain;
-import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.comp1.EasyTurret;
-import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.comp1.FlywheelShooter;
-import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.comp1.HoodGate;
-import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.comp1.IntakeTransfer;
-import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.comp1.GoalSelector;
+import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1.Drivetrain;
+import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1.EasyTurret;
+import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1.FlywheelShooter;
+import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1.HoodGate;
+import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1.IntakeTransfer;
+import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1.GoalSelector;
 
 import java.util.Set;
 

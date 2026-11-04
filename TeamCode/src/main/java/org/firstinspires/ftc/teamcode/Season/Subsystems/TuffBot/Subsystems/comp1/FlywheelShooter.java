@@ -1,6 +1,4 @@
-package org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.comp1;
-
-import static com.pedropathing.ivy.commands.Commands.instant;
+package org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;

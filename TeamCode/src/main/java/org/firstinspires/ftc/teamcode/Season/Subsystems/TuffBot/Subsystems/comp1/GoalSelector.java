@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Subsystems.comp1;
+package org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1;
 
 /**
  * Picks which of the two same-alliance goals to aim at, using Pedro field coords (0..141.5).

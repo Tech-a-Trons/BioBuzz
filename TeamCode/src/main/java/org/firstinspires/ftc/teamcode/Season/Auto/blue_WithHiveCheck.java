@@ -13,7 +13,7 @@ import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 
 import org.firstinspires.ftc.teamcode.Season.Auto.pedro.Constants;
-import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Robot.ProtoBot;
+import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Robot.ProtoBot;
 
 import dev.nextftc.robot.Telemetry;
 import dev.nextftc.robot.opmode.NextAutonomous;

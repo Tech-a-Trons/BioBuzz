@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Season.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Robot.ProtoBot;
+import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Robot.ProtoBot;
 
 import dev.nextftc.robot.opmode.NextTeleop;
 

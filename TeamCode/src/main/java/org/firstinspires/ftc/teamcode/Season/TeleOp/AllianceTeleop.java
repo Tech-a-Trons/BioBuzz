@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Season.Auto.pedro.Constants;
-import org.firstinspires.ftc.teamcode.Season.Subsystems.PrototypeBot.Robot.ProtoBot;
+import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Robot.ProtoBot;
 
 import java.util.List;
 
