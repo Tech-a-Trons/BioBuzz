@@ -23,7 +23,7 @@ public class MecanumTeleOp extends LinearOpMode {
     private static final double kI = 0.0;      // start at 0, add only if it settles below target
     private static final double kD = 0.03;      // start at 0, add only if it oscillates
 
-    private static final double TARGET_RPM = 23;
+    private static final double TARGET_RPM = 27;
     private static final double DEG_PER_SEC_PER_RPM = 6.0; // RPM x 6 = deg/s
     private static final double MAX_INTEGRAL = 0.3;        // anti-windup limit (in power units)
 

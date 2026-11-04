@@ -26,7 +26,7 @@ public class TurretOp extends LinearOpMode {
     private static final double kI = 0.0;
     private static final double kD = 0.03;
 
-    private static final double TARGET_RPM = 23;
+    private static final double TARGET_RPM = 29;
     private static final double DEG_PER_SEC_PER_RPM = 6.0; // RPM x 6 = deg/s
     private static final double MAX_INTEGRAL = 0.3;        // anti-windup limit (in power units)
     private static final double SHOOTER_SIGN = -1;
