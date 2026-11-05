@@ -102,8 +102,8 @@ public class TurretOp extends LinearOpMode {
 
             // ---------------- Mechanism controls ----------------
             if (gamepad1.dpad_up) {
-                hood.setPosition(0.2);
-                gate.setPosition(0.15);
+                hood.setPosition(0.1);
+                gate.setPosition(0.35);
             }
             if (gamepad1.a) {
                 intake.setPower(-1);
@@ -113,16 +113,17 @@ public class TurretOp extends LinearOpMode {
                 outtakeLeft.setPower(-0.01);
                 transfer.setPower(0);
                 intake.setPower(0);
-                gate.setPosition(0);
+                gate.setPosition(0.15);
                 feedPending = false;
             }
             if (gamepad1.right_bumper) {
                 transfer.setPower(-0.8);
+                gate.setPosition(0.15);
                 intake.setPower(1);
             }
             if (gamepad1.left_trigger_pressed && !feedPending) {
                 // Non-blocking version of the old sleep(250) so the turret keeps updating
-                gate.setPosition(0.17);
+                gate.setPosition(0.35);
                 gateTimer.reset();
                 feedPending = true;
             }
@@ -132,8 +133,8 @@ public class TurretOp extends LinearOpMode {
                 feedPending = false;
             }
             if (gamepad1.dpad_down) {
-                gate.setPosition(0.11);
-                hood.setPosition(0);
+                gate.setPosition(0.15);
+                hood.setPosition(0.0);
             }
 
             // ---------------- Shooter PID ----------------
