@@ -136,6 +136,7 @@ public class TurretOp extends LinearOpMode {
                 gate.setPosition(0.15);
                 hood.setPosition(0.0);
             }
+            //
 
             // ---------------- Shooter PID ----------------
             double dt = timer.seconds();
