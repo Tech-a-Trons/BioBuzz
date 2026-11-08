@@ -22,7 +22,7 @@ public class TurretOp extends LinearOpMode {
     // ---- Shooter PID constants (tune these) ----
     private static final double kS = 0;     // power to overcome friction
     private static final double kV = 0.023;    // power per RPM
-    private static final double kP = 0.02;    // error is in deg/s
+    private static final double kP = 0.05;    // error is in deg/s
     private static final double kI = 0.0;
     private static final double kD = 0.0;
 
@@ -33,7 +33,7 @@ public class TurretOp extends LinearOpMode {
 
     // ---- Turret / localization setup ----
     private static final String ALLIANCE = "BLUE"; // change to "RED" when needed
-    private static final Pose START_POSE = new Pose(94.7, 118.75, Math.toRadians(270));
+    private static final Pose START_POSE = new Pose(77, 8.6, Math.toRadians(90));
 
     // Time to wait after opening the gate before feeding (was a blocking sleep(250))
     private static final double GATE_FEED_DELAY_SEC = 0.25;
@@ -138,6 +138,11 @@ public class TurretOp extends LinearOpMode {
             }
             //
 
+            //reloc
+            if (gamepad1.dpad_right) {
+                follower.setPose(START_POSE);
+            }
+
             // ---------------- Shooter PID ----------------
             double dt = timer.seconds();
             timer.reset();
@@ -178,6 +183,9 @@ public class TurretOp extends LinearOpMode {
             telemetry.addData("Turret Desired Deg", turret.getDesiredDeg());
             telemetry.addData("Turret Current Deg", turret.getCurrentDeg());
             telemetry.addData("Turret Target Deg", turret.getTargetDeg());
+            telemetry.addData("Turret Encoder Ticks", turret.getEncoderTicks());
+            telemetry.addData("X", follower.pose().x());
+            telemetry.addData("Y", follower.pose().y());
             telemetry.update();
         }
 

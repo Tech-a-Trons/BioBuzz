@@ -90,4 +90,5 @@ public class EasyTurret {
     public double getDesiredDeg() { return desiredDeg; }
     public double getCurrentDeg() { return currentDeg; }
     public double getTargetDeg()  { return targetDeg; }
+    public double getEncoderTicks() {return lastTargetTicks; }
 }
