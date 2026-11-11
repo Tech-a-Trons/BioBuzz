@@ -21,14 +21,20 @@ public abstract class AllianceTeleop extends NextOpMode {
 
     // Used only if Auto didn't leave a pose in PoseStorage. Set to where you really place the robot.
     // Heading is radians; blue is the mirror of red (x -> 141.5 - x, heading -> pi - heading).
-    private static final Pose FALLBACK_RED  = new Pose(70.75, 70.75, Math.toRadians(270));
+    private static final Pose FALLBACK_RED  = new Pose(70.75, 8.6, Math.toRadians(270));
     private static final Pose FALLBACK_BLUE = new Pose(141.5 - 70.75, 70.75, Math.PI - Math.toRadians(270));
+
+    // Relocalization pose for dpad right (START_POSE from TurretOp, which was set up for BLUE).
+    // Red is the mirror of blue.
+    private static final Pose START_BLUE = new Pose(70.75, 8.6, Math.toRadians(270));
+    private static final Pose START_RED  = new Pose(70.75, 8.6, Math.toRadians(270));
+
     // Robot heading (radians) that is "forward" for the driver at the start. Set this to the direction the
     // driver looks across the field. Press BACK any time to re-zero it to the robot's current facing.
     private static final double DRIVER_FORWARD_RED  = Math.toRadians(270);
     private static final double DRIVER_FORWARD_BLUE = Math.toRadians(270);
     private static final long READY_HOLD_MS = 120;     // must be ready this long before the buzz
-    private static final long GATE_OPEN_DELAY_MS = 80;   // 0 = no delay; raise if balls hit a half-open gate
+    private static final long GATE_OPEN_DELAY_MS = 250; // same as TurretOp GATE_FEED_DELAY_SEC (0.25 s)
     private static final long TELEMETRY_PERIOD_MS = 100;
     // Set false if NextFTC already clears the hub bulk cache for you
     private static final boolean MANUAL_BULK_CACHING = true;
@@ -84,6 +90,7 @@ public abstract class AllianceTeleop extends NextOpMode {
         gp1.a().onTrue(robot.intakeTransfer.collect());
         gp1.a().onTrue(instant(() -> feedPending = false));
         gp1.rightBumper().onTrue(robot.intakeTransfer.feedSlow());
+        gp1.rightBumper().onTrue(robot.hoodGate.closeGate());   // TurretOp sets gate to 0.22 (closed) here
         gp1.leftBumper().onTrue(robot.intakeTransfer.stop());
         gp1.leftBumper().onTrue(robot.hoodGate.closeGate());
         gp1.leftBumper().onTrue(instant(() -> feedPending = false));
@@ -91,6 +98,10 @@ public abstract class AllianceTeleop extends NextOpMode {
         // Hood / gate presets
         gp1.dpadUp().onTrue(robot.hoodGate.presetUp());
         gp1.dpadDown().onTrue(robot.hoodGate.presetDown());
+
+        // Relocalize (same as TurretOp dpad right)
+        gp1.dpadRight().onTrue(instant(() ->
+                follower.setPose("BLUE".equals(alliance) ? START_BLUE : START_RED)));
 
         // Shooter mode: fixed RPM <-> distance-based RPM
         gp1.x().onTrue(robot.shooter.toggleOdo());
@@ -143,6 +154,7 @@ public abstract class AllianceTeleop extends NextOpMode {
             Telemetry.log("Pose", String.format("x=%.1f y=%.1f h=%.0f", pose.x(), pose.y(), Math.toDegrees(pose.heading())));
             Telemetry.log("Goal", String.format("(%.0f, %.0f) %s", robot.goal.x(), robot.goal.y(), robot.goal.isUpper() ? "upper" : "lower"));
             Telemetry.log("Turret deg", String.format("want %.1f / now %.1f", robot.turret.getTargetDeg(), robot.turret.getCurrentDeg()));
+            Telemetry.log("Gate pos", String.format("%.2f", robot.hoodGate.getGatePosition()));
             Telemetry.log("Loop ms", String.format("%.1f", loopMs));
             Telemetry.log("Shot mode", robot.shooter.isOdoMode() ? "ODO" : "FIXED");
             Telemetry.log("Target RPM", String.format("%.1f", robot.shooter.getTargetRpm()));

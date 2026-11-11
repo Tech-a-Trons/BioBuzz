@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1;
 
+import static com.pedropathing.ivy.commands.Commands.infinite;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -34,6 +36,7 @@ public class Drivetrain implements Mechanism {
         frontRight = hardwareMap.dcMotor.get("fr");
         backRight  = hardwareMap.dcMotor.get("br");
 
+        // Same directions as the simple TurretOp
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
     }

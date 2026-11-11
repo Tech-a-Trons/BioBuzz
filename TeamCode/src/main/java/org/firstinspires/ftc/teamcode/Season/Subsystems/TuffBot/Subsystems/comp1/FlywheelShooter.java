@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1;
 
+import static com.pedropathing.ivy.commands.Commands.instant;
+
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -15,18 +16,18 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import dev.nextftc.robot.Mechanism;
 
 /**
- * Flywheel with our own feedforward + PID (constants from the old MecanumTeleOp)
+ * Flywheel with our own feedforward + PID (constants from the tuned TurretOp)
  * and the odometry-based RPM from OdoPID merged in. Call update() every loop.
  */
 public class FlywheelShooter implements Mechanism {
-    // ---- tune these ----
-    private static final double kS = 0.12;
-    private static final double kV = 0.001;
-    private static final double kP = 0.027;   // error is in deg/s
+    // ---- tuned values (from TurretOp) ----
+    private static final double kS = 0;
+    private static final double kV = 0.023;
+    private static final double kP = 0.05;    // error is in deg/s
     private static final double kI = 0.0;
-    private static final double kD = 0.03;
+    private static final double kD = 0.0;
 
-    private static final double FIXED_RPM = 23;            // old TARGET_RPM
+    private static final double FIXED_RPM = 27.8;          // TurretOp TARGET_RPM
     private static final double RPM_PER_INCH = 1.13636;    // from OdoPID
     private static final double DEG_PER_SEC_PER_RPM = 6.0;
     private static final double MAX_INTEGRAL = 0.3;
@@ -49,7 +50,7 @@ public class FlywheelShooter implements Mechanism {
         this.goal = goal;
 
         motor = hardwareMap.get(DcMotorEx.class, "outtakeleft");
-        motor.setDirection(DcMotorSimple.Direction.REVERSE);
+        // No setDirection(REVERSE): TurretOp only flips the sign via SHOOTER_SIGN, so doing both would cancel out.
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);

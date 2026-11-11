@@ -55,7 +55,7 @@ public class TurretOp extends LinearOpMode {
         Servo gate = hardwareMap.get(Servo.class, "gate");
 
         DcMotorEx outtakeLeft = hardwareMap.get(DcMotorEx.class, "outtakeleft");
-        outtakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+
         outtakeLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         outtakeLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         outtakeLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -102,8 +102,8 @@ public class TurretOp extends LinearOpMode {
 
             // ---------------- Mechanism controls ----------------
             if (gamepad1.dpad_up) {
-                hood.setPosition(0.1);
-                gate.setPosition(0.35);
+                hood.setPosition(0);
+                gate.setPosition(0.);
             }
             if (gamepad1.a) {
                 intake.setPower(-1);
@@ -118,12 +118,12 @@ public class TurretOp extends LinearOpMode {
             }
             if (gamepad1.right_bumper) {
                 transfer.setPower(-0.8);
-                gate.setPosition(0.15);
+                gate.setPosition(0.22);
                 intake.setPower(1);
             }
             if (gamepad1.left_trigger_pressed && !feedPending) {
                 // Non-blocking version of the old sleep(250) so the turret keeps updating
-                gate.setPosition(0.35);
+                gate.setPosition(0);
                 gateTimer.reset();
                 feedPending = true;
             }
@@ -133,8 +133,8 @@ public class TurretOp extends LinearOpMode {
                 feedPending = false;
             }
             if (gamepad1.dpad_down) {
-                gate.setPosition(0.15);
-                hood.setPosition(0.0);
+                gate.setPosition(0.0);
+                hood.setPosition(0.22);
             }
             //
 

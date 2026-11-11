@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1;
 
+import static com.pedropathing.ivy.commands.Commands.instant;
+
 import com.pedropathing.ivy.Command;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -21,8 +23,9 @@ public class IntakeTransfer implements Mechanism {
         if (t != lastTransfer) { transfer.setPower(t); lastTransfer = t; }
     }
 
-    public Command collect()  { return instant(() -> set(-1, 1)); }
-    public Command feed()     { return instant(() -> set(1, -1)); }
-    public Command feedSlow() { return instant(() -> set(1, -0.8)); }
-    public Command stop()     { return instant(() -> set(0, 0)); }
+    // Powers taken from the simple TurretOp: set(intake, transfer)
+    public Command collect()  { return instant(() -> set(-1, 1)); }     // gamepad a
+    public Command feed()     { return instant(() -> set(1, -1)); }     // left trigger (after gate opens)
+    public Command feedSlow() { return instant(() -> set(1, -0.8)); }   // right bumper
+    public Command stop()     { return instant(() -> set(0, 0)); }      // left bumper
 }
