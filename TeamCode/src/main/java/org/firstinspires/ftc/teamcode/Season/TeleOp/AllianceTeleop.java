@@ -83,6 +83,8 @@ public abstract class AllianceTeleop extends NextOpMode {
         robot.drive.setForwardHeading("BLUE".equals(alliance) ? DRIVER_FORWARD_BLUE : DRIVER_FORWARD_RED);
         robot.drive.startDrive(gamepad1);
         robot.turret.track().schedule();
+        robot.flower.f1start();
+        robot.flower.f2start();
 
         CommandGamepad gp1 = new CommandGamepad(gamepad1);
 
@@ -98,6 +100,12 @@ public abstract class AllianceTeleop extends NextOpMode {
         // Hood / gate presets
         gp1.dpadUp().onTrue(robot.hoodGate.presetUp());
         gp1.dpadDown().onTrue(robot.hoodGate.presetDown());
+
+        //Flower Ramp controls
+        gp1.dpadLeft().onTrue(robot.flower.f1down());
+        gp1.dpadLeft().onTrue(robot.flower.f2down());
+        gp1.dpadRight().onTrue(robot.flower.f1start());
+        gp1.dpadRight().onTrue(robot.flower.f2start());
 
         // Relocalize (same as TurretOp dpad right)
         gp1.dpadRight().onTrue(instant(() ->
