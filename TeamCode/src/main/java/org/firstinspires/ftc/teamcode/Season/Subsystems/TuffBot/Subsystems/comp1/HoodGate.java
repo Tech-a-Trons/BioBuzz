@@ -10,8 +10,8 @@ import dev.nextftc.robot.Mechanism;
 
 /** Hood + gate servos. Only sends a position when it changes. */
 public class HoodGate implements Mechanism {
-    private static final double GATE_OPEN   = 0.4;
-    private static final double GATE_CLOSED = 0.25;
+    private static final double GATE_OPEN   = 0.55;
+    private static final double GATE_CLOSED = 0.7;
 
     // Hood presets (from the simple TurretOp)
     private static final double HOOD_UP   = 0.0;   // dpad up

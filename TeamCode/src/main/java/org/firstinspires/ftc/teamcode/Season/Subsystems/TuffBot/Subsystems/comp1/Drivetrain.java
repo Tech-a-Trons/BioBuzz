@@ -18,6 +18,9 @@ import dev.nextftc.robot.Mechanism;
 public class Drivetrain implements Mechanism {
     private static final double EPS = 0.005;
 
+    // false = robot-centric (sticks move the robot relative to its own front), true = field-centric
+    private static final boolean FIELD_CENTRIC = false;
+
     // ---- driver feel (tune) ----
     private static final double DEADBAND = 0.05;
     private static final double CURVE = 0.6;       // 0 = linear, 1 = fully cubic (finer control near center)
@@ -64,10 +67,13 @@ public class Drivetrain implements Mechanism {
             double rot = shape(gamepad.right_stick_x) * scale;
 
             // Rotate the stick vector by -(heading - forwardHeading) to get robot-centric input
-            double h = headingSource.getAsDouble() - forwardHeading;
-            double cos = Math.cos(h), sin = Math.sin(h);
-            double robotStr = str * cos + fwd * sin;
-            double robotFwd = -str * sin + fwd * cos;
+            double robotStr = str, robotFwd = fwd;
+            if (FIELD_CENTRIC) {
+                double h = headingSource.getAsDouble() - forwardHeading;
+                double cos = Math.cos(h), sin = Math.sin(h);
+                robotStr = str * cos + fwd * sin;
+                robotFwd = -str * sin + fwd * cos;
+            }
 
             drive(robotFwd, robotStr, rot);
         }).schedule();

@@ -50,6 +50,8 @@ public abstract class AllianceTeleop extends NextOpMode {
     private final ElapsedTime feedTimer = new ElapsedTime();
     private final ElapsedTime loopTimer = new ElapsedTime();
     private final ElapsedTime telemetryTimer = new ElapsedTime();
+    boolean lastTrigger = false;
+    int x = 0;
 
     protected AllianceTeleop(ProtoBot robot, String alliance) {
         super(robot);
@@ -82,9 +84,9 @@ public abstract class AllianceTeleop extends NextOpMode {
         robot.drive.setHeadingSource(() -> follower.pose().heading());
         robot.drive.setForwardHeading("BLUE".equals(alliance) ? DRIVER_FORWARD_BLUE : DRIVER_FORWARD_RED);
         robot.drive.startDrive(gamepad1);
-        robot.turret.track().schedule();
-        robot.flower.f1start();
-        robot.flower.f2start();
+        //robot.turret.track().schedule();
+//        robot.flower.f1start();
+//        robot.flower.f2start();
 
         CommandGamepad gp1 = new CommandGamepad(gamepad1);
 
@@ -97,22 +99,24 @@ public abstract class AllianceTeleop extends NextOpMode {
         gp1.leftBumper().onTrue(robot.hoodGate.closeGate());
         gp1.leftBumper().onTrue(instant(() -> feedPending = false));
 
+        //gp1.x().onTrue(robot.intakeTransfer.transfer());
+
         // Hood / gate presets
         gp1.dpadUp().onTrue(robot.hoodGate.presetUp());
         gp1.dpadDown().onTrue(robot.hoodGate.presetDown());
 
         //Flower Ramp controls
-        gp1.dpadLeft().onTrue(robot.flower.f1down());
-        gp1.dpadLeft().onTrue(robot.flower.f2down());
-        gp1.dpadRight().onTrue(robot.flower.f1start());
-        gp1.dpadRight().onTrue(robot.flower.f2start());
+//        gp1.dpadLeft().onTrue(robot.flower.f1down());
+//        gp1.dpadLeft().onTrue(robot.flower.f2down());
+//        gp1.dpadRight().onTrue(robot.flower.f1start());
+//        gp1.dpadRight().onTrue(robot.flower.f2start());
 
         // Relocalize (same as TurretOp dpad right)
         gp1.dpadRight().onTrue(instant(() ->
                 follower.setPose("BLUE".equals(alliance) ? START_BLUE : START_RED)));
 
         // Shooter mode: fixed RPM <-> distance-based RPM
-        gp1.x().onTrue(robot.shooter.toggleOdo());
+        //gp1.x().onTrue(robot.shooter.toggleOdo());
 
         loopTimer.reset();
     }
@@ -130,14 +134,24 @@ public abstract class AllianceTeleop extends NextOpMode {
         // Shooter spins while the right trigger is held
         robot.shooter.setSpinning(gamepad1.right_trigger_pressed);
 
-        // Left trigger: open gate, then feed after a short non-blocking delay
-        if (gamepad1.left_trigger_pressed && !feedPending) {
+        boolean trigger = gamepad1.left_trigger_pressed;
+        boolean triggerJustPressed = trigger && !lastTrigger;   // rising edge only
+        lastTrigger = trigger;
+
+        if (triggerJustPressed && !feedPending) {
             robot.hoodGate.openGate().schedule();
             feedTimer.reset();
             feedPending = true;
         }
+
         if (feedPending && feedTimer.milliseconds() >= GATE_OPEN_DELAY_MS) {
-            robot.intakeTransfer.feed().schedule();
+            if (x == 0) {
+                robot.intakeTransfer.transfer();
+                x = 1;
+            } else {
+                robot.intakeTransfer.feed();
+                x = 0;
+            }
             feedPending = false;
         }
 

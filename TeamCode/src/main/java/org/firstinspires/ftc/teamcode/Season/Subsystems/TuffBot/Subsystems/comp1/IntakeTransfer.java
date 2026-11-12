@@ -28,4 +28,6 @@ public class IntakeTransfer implements Mechanism {
     public Command feed()     { return instant(() -> set(1, -1)); }     // left trigger (after gate opens)
     public Command feedSlow() { return instant(() -> set(1, -0.8)); }   // right bumper
     public Command stop()     { return instant(() -> set(0, 0)); }      // left bumper
+
+    public Command transfer() {return instant(() -> set(0, -1));} // gamepad x
 }
