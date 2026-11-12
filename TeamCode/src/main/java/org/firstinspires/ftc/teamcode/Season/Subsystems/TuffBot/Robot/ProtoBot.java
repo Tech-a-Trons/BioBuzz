@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Season.SensorStuff.Limelight.hiveTip;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1.Drivetrain;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1.EasyTurret;
+import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1.FlowerTaker;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1.FlywheelShooter;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1.HoodGate;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1.IntakeTransfer;
@@ -25,6 +26,7 @@ public class ProtoBot implements NextRobot {
     public final GoalSelector goal = new GoalSelector();
     public final FlywheelShooter shooter = new FlywheelShooter();
     public final hiveTip tip = new hiveTip();
+    public final FlowerTaker flower = new FlowerTaker();
 
     // EasyTurret is a plain class (not a Mechanism), so it's a field but not in getMechanisms()
     public final EasyTurret turret = new EasyTurret();
@@ -37,6 +39,7 @@ public class ProtoBot implements NextRobot {
         goal.setAlliance(alliance);
         drive.init(hardwareMap);
         intakeTransfer.init(hardwareMap);
+        flower.init(hardwareMap);
         hoodGate.init(hardwareMap);
         shooter.init(hardwareMap, follower, goal);
         turret.init(hardwareMap, follower, goal);
@@ -44,6 +47,6 @@ public class ProtoBot implements NextRobot {
 
     @Override
     public Set<Mechanism> getMechanisms() {
-        return Set.of(drive, intakeTransfer, hoodGate, shooter, tip);
+        return Set.of(drive, intakeTransfer, hoodGate, shooter, tip, flower);
     }
 }
