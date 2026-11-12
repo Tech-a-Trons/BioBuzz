@@ -146,10 +146,10 @@ public abstract class AllianceTeleop extends NextOpMode {
 
         if (feedPending && feedTimer.milliseconds() >= GATE_OPEN_DELAY_MS) {
             if (x == 0) {
-                robot.intakeTransfer.transfer();
+                robot.intakeTransfer.transfer().schedule();
                 x = 1;
             } else {
-                robot.intakeTransfer.feed();
+                robot.intakeTransfer.feed().schedule();
                 x = 0;
             }
             feedPending = false;
