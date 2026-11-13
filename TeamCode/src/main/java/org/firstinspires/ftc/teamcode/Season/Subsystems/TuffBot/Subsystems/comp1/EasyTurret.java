@@ -53,8 +53,8 @@ public class EasyTurret {
 
     // ---- gains (tune in this order: kS, kV, kVP, then LATENCY_S) ----
     private static final double kS = 0.04;      // power to just start moving
-    private static final double kV = 0.0017;    // power per deg/s (5203 312rpm / 3:1 tops out ~620 deg/s unloaded)
-    private static final double kVP = 0.0010;   // power per deg/s of velocity error
+    private static final double kV = 0.0012;    // power per deg/s (5203 312rpm / 3:1 tops out ~620 deg/s unloaded)
+    private static final double kVP = 0.001;   // power per deg/s of velocity error
     private static final double kI = 0.0;       // optional, only acts inside I_ZONE_DEG
     private static final double I_ZONE_DEG = 3.0, MAX_INTEGRAL = 0.1;
     private static final double DEADBAND_DEG = 0.25;     // no kS push inside this

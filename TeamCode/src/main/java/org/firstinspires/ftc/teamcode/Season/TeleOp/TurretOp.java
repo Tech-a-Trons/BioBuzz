@@ -21,12 +21,12 @@ public class TurretOp extends LinearOpMode {
 
     // ---- Shooter PID constants (tune these) ----
     private static final double kS = 0;     // power to overcome friction
-    private static final double kV = 0.023;    // power per RPM
+    private static final double kV = 0.032;    // power per RPM
     private static final double kP = 0.05;    // error is in deg/s
     private static final double kI = 0.0;
     private static final double kD = 0.0;
 
-    private static final double TARGET_RPM = 27.8;
+    private static final double TARGET_RPM = 2.3;
     private static final double DEG_PER_SEC_PER_RPM = 6.0; // RPM x 6 = deg/s
     private static final double MAX_INTEGRAL = 0.3;        // anti-windup limit (in power units)
     private static final double SHOOTER_SIGN = -1;
@@ -37,6 +37,8 @@ public class TurretOp extends LinearOpMode {
 
     // Time to wait after opening the gate before feeding (was a blocking sleep(250))
     private static final double GATE_FEED_DELAY_SEC = 0.25;
+
+    double hood_position = 0.45;
 
     EasyTurret turret;
     Follower follower;
@@ -75,6 +77,8 @@ public class TurretOp extends LinearOpMode {
         double integral = 0;
         double lastError = 0;
         ElapsedTime timer = new ElapsedTime();
+        ElapsedTime hoodSwitch = new ElapsedTime();
+
         ElapsedTime gateTimer = new ElapsedTime();
         boolean feedPending = false;
 
@@ -87,7 +91,7 @@ public class TurretOp extends LinearOpMode {
         while (opModeIsActive()) {
             // Keep localization and turret tracking running every loop
             follower.update();
-            turret.update();
+//            turret.update();
 
             // ---------------- Mecanum drive ----------------
             double y = -gamepad1.left_stick_y;
@@ -101,11 +105,25 @@ public class TurretOp extends LinearOpMode {
             backRightMotor.setPower((y + x - rx) / denominator);
 
             // ---------------- Mechanism controls ----------------
-            if (gamepad1.dpad_up) {
+            if (gamepad1.dpad_right && (hoodSwitch.milliseconds() > 500)) {
+                hood_position += 0.01;
+                hoodSwitch.reset();
+                hood.setPosition(hood_position);
+
+            }
+            if (gamepad1.dpad_left) {
+                hood_position -= 0.01;
+                hoodSwitch.reset();
+                hood.setPosition(hood_position);
+
+            }
+
+                if (gamepad1.dpad_up) {
                 hood.setPosition(0);
-                gate.setPosition(0.);
+                gate.setPosition(0);
             }
             if (gamepad1.a) {
+                gate.setPosition(0);
                 intake.setPower(-1);
                 transfer.setPower(1);
             }
@@ -113,12 +131,12 @@ public class TurretOp extends LinearOpMode {
                 outtakeLeft.setPower(-0.01);
                 transfer.setPower(0);
                 intake.setPower(0);
-                gate.setPosition(0.15);
+                gate.setPosition(0.30);
                 feedPending = false;
             }
             if (gamepad1.right_bumper) {
                 transfer.setPower(-0.8);
-                gate.setPosition(0.22);
+                gate.setPosition(0.30);
                 intake.setPower(1);
             }
             if (gamepad1.left_trigger_pressed && !feedPending) {
@@ -134,7 +152,6 @@ public class TurretOp extends LinearOpMode {
             }
             if (gamepad1.dpad_down) {
                 gate.setPosition(0.0);
-                hood.setPosition(0.22);
             }
             //
 
@@ -186,6 +203,7 @@ public class TurretOp extends LinearOpMode {
             telemetry.addData("Turret Encoder Ticks", turret.getEncoderTicks());
             telemetry.addData("X", follower.pose().x());
             telemetry.addData("Y", follower.pose().y());
+            telemetry.addData("Hood Position", hood_position);
             telemetry.update();
         }
 
