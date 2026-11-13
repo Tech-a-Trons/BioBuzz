@@ -142,12 +142,7 @@ public abstract class AllianceTeleop extends NextOpMode {
         boolean readyNow = robot.shooter.atSpeed() && robot.turret.isOnTarget();
         if (readyNow != readyState) {
             readyState = readyNow;
-            if (readyState) {
-                gamepad1.setLedColor(0, 255, 0, Gamepad.LED_DURATION_CONTINUOUS); // GREEN when ready!
-                gamepad1.rumble(120);
-            } else {
-                gamepad1.setLedColor(255, 0, 0, Gamepad.LED_DURATION_CONTINUOUS); // RED when aiming / spinning up
-            }
+            
         }
 
         if (telemetryTimer.milliseconds() >= TELEMETRY_PERIOD_MS) {

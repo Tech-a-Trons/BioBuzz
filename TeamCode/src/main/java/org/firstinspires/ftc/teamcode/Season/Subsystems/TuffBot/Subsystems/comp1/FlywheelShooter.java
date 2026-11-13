@@ -18,12 +18,12 @@ import dev.nextftc.robot.Mechanism;
 public class FlywheelShooter implements Mechanism {
     // ---- tuned constants (units in deg/sec) ----
     private static final double kS = 0.02;
-    private static final double kV = 0.00025;   // ~0.45 power at 1800 deg/s (300 RPM)
-    private static final double kP = 0.0002;    // smooth velocity error correction
+    private static final double kV = 0.0025;   // ~0.45 power at 1800 deg/s (300 RPM)
+    private static final double kP = 0.002;    // smooth velocity error correction
     private static final double kI = 0.00001;
     private static final double kD = 0.0;
 
-    private static final double TARGET_RPM = 250.0;                      // 300 RPM
+    private static final double TARGET_RPM = 25.0;                      // 300 RPM
     private static final double DEG_PER_SEC_PER_RPM = 6.0;               // 1 RPM = 6 deg/sec
     private static final double MAX_INTEGRAL = 0.2;
     private static final double SHOOTER_SIGN = -1;
