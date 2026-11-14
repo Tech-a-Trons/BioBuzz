@@ -19,17 +19,24 @@ import dev.nextftc.robot.triggers.CommandGamepad;
 
 public abstract class AllianceTeleop extends NextOpMode {
 
+    // Used only if Auto didn't leave a pose in PoseStorage. Set to where you really place the robot.
+    // Heading is radians; blue is the mirror of red (x -> 141.5 - x, heading -> pi - heading).
     private static final Pose FALLBACK_RED  = new Pose(70.75, 8.6, Math.toRadians(270));
     private static final Pose FALLBACK_BLUE = new Pose(141.5 - 70.75, 70.75, Math.PI - Math.toRadians(270));
 
+    // Relocalization pose for dpad right (START_POSE from TurretOp, which was set up for BLUE).
+    // Red is the mirror of blue.
     private static final Pose START_BLUE = new Pose(70.75, 8.6, Math.toRadians(270));
     private static final Pose START_RED  = new Pose(70.75, 8.6, Math.toRadians(270));
 
+    // Robot heading (radians) that is "forward" for the driver at the start. Set this to the direction the
+    // driver looks across the field. Press BACK any time to re-zero it to the robot's current facing.
     private static final double DRIVER_FORWARD_RED  = Math.toRadians(270);
     private static final double DRIVER_FORWARD_BLUE = Math.toRadians(270);
-    private static final long READY_HOLD_MS = 120;
-    private static final long GATE_OPEN_DELAY_MS = 250;
+    private static final long READY_HOLD_MS = 120;     // must be ready this long before the buzz
+    private static final long GATE_OPEN_DELAY_MS = 250; // same as TurretOp GATE_FEED_DELAY_SEC (0.25 s)
     private static final long TELEMETRY_PERIOD_MS = 100;
+    // Set false if NextFTC already clears the hub bulk cache for you
     private static final boolean MANUAL_BULK_CACHING = true;
 
     private final ProtoBot robot;
@@ -73,34 +80,64 @@ public abstract class AllianceTeleop extends NextOpMode {
         robot.init(hardwareMap, follower, alliance);
         robot.tip.init(hardwareMap);
 
+        // Continuous commands
         robot.drive.setHeadingSource(() -> follower.pose().heading());
         robot.drive.setForwardHeading("BLUE".equals(alliance) ? DRIVER_FORWARD_BLUE : DRIVER_FORWARD_RED);
         robot.drive.startDrive(gamepad1);
+        //robot.turret.track().schedule();
+//        robot.flower.f1start();
+//        robot.flower.f2start();
 
         CommandGamepad gp1 = new CommandGamepad(gamepad1);
 
+        // Intake / transfer
         gp1.a().onTrue(robot.intakeTransfer.collect());
         gp1.a().onTrue(instant(() -> feedPending = false));
         gp1.rightBumper().onTrue(robot.intakeTransfer.feedSlow());
-        gp1.rightBumper().onTrue(robot.hoodGate.closeGate());
+        gp1.rightBumper().onTrue(robot.hoodGate.closeGate());   // TurretOp sets gate to 0.22 (closed) here
         gp1.leftBumper().onTrue(robot.intakeTransfer.stop());
         gp1.leftBumper().onTrue(robot.hoodGate.closeGate());
         gp1.leftBumper().onTrue(instant(() -> feedPending = false));
 
+        //gp1.x().onTrue(robot.intakeTransfer.transfer());
+
+        // Hood / gate presets
         gp1.dpadUp().onTrue(robot.hoodGate.presetUp());
         gp1.dpadDown().onTrue(robot.hoodGate.presetDown());
 
+        //Flower Ramp controls
+//        gp1.dpadLeft().onTrue(robot.flower.f1down());
+//        gp1.dpadLeft().onTrue(robot.flower.f2down());
+//        gp1.dpadRight().onTrue(robot.flower.f1start());
+//        gp1.dpadRight().onTrue(robot.flower.f2start());
+
+        // Relocalize (same as TurretOp dpad right)
         gp1.dpadRight().onTrue(instant(() ->
                 follower.setPose("BLUE".equals(alliance) ? START_BLUE : START_RED)));
 
-        // Set default red LED status at start
-        gamepad1.setLedColor(255, 0, 0, Gamepad.LED_DURATION_CONTINUOUS);
+        // Shooter mode: fixed RPM <-> distance-based RPM
+        //gp1.x().onTrue(robot.shooter.toggleOdo());
 
         loopTimer.reset();
     }
 
     @Override
     public void periodic() {
+        // Left trigger: open gate, wait, then feed (non-blocking, same as TurretOp)
+        boolean trigger = gamepad1.left_trigger_pressed;
+        boolean triggerJustPressed = trigger && !lastTrigger;   // rising edge only
+        lastTrigger = trigger;
+
+        if (triggerJustPressed && !feedPending) {
+            robot.hoodGate.openGate().schedule();   // TurretOp: gate.setPosition(0)
+            feedTimer.reset();
+            feedPending = true;
+        }
+
+        if (feedPending && feedTimer.milliseconds() >= GATE_OPEN_DELAY_MS) {
+            robot.intakeTransfer.feed().schedule(); // TurretOp: transfer -1, intake 1
+            feedPending = false;
+        }
         if (MANUAL_BULK_CACHING) {
             for (LynxModule hub : hubs) hub.clearBulkCache();
         }
@@ -108,42 +145,33 @@ public abstract class AllianceTeleop extends NextOpMode {
         loopTimer.reset();
 
         follower.update();
-//        robot.turret.update();
 
+        // Shooter spins while the right trigger is held
         robot.shooter.setSpinning(gamepad1.right_trigger_pressed);
+//
+//        boolean trigger = gamepad1.left_trigger_pressed;
+//        boolean triggerJustPressed = trigger && !lastTrigger;   // rising edge only
+//        lastTrigger = trigger;
+//
+//        if (triggerJustPressed && !feedPending) {
+//            robot.hoodGate.openGate().schedule();
+//            feedTimer.reset();
+//            feedPending = true;
+//        }
+//
+//        if (feedPending && feedTimer.milliseconds() >= GATE_OPEN_DELAY_MS) {
+//            if (x == 0) {
+//                robot.intakeTransfer.transfer();
+//                x = 1;
+//            } else {
+//                robot.intakeTransfer.feed();
+//                x = 0;
+//            }
+//            feedPending = false;
+//        }
 
-        robot.hoodGate.applyVelocityCompensation(
-            robot.shooter.isSpinning(),
-            robot.shooter.getTargetRpm(),
-            robot.shooter.getCurrentRpm()
-        );
+        // Ready-to-shoot feedback: shooter at speed AND turret on target -> short buzz + green light
 
-        boolean trigger = gamepad1.left_trigger_pressed;
-        boolean triggerJustPressed = trigger && !lastTrigger;
-        lastTrigger = trigger;
-
-        if (triggerJustPressed && !feedPending) {
-            robot.hoodGate.openGate().schedule();
-            feedTimer.reset();
-            feedPending = true;
-        }
-
-        if (feedPending && feedTimer.milliseconds() >= GATE_OPEN_DELAY_MS) {
-            if (x == 0) {
-                robot.intakeTransfer.transfer().schedule();
-                x = 1;
-            } else {
-                robot.intakeTransfer.feed().schedule();
-                x = 0;
-            }
-            feedPending = false;
-        }
-
-        boolean readyNow = robot.shooter.atSpeed() && robot.turret.isOnTarget();
-        if (readyNow != readyState) {
-            readyState = readyNow;
-            
-        }
 
         if (telemetryTimer.milliseconds() >= TELEMETRY_PERIOD_MS) {
             telemetryTimer.reset();
@@ -153,8 +181,8 @@ public abstract class AllianceTeleop extends NextOpMode {
             Telemetry.log("Goal", String.format("(%.0f, %.0f) %s", robot.goal.x(), robot.goal.y(), robot.goal.isUpper() ? "upper" : "lower"));
             Telemetry.log("Turret deg", String.format("want %.1f / now %.1f", robot.turret.getTargetDeg(), robot.turret.getCurrentDeg()));
             Telemetry.log("Gate pos", String.format("%.2f", robot.hoodGate.getGatePosition()));
-            Telemetry.log("Hood comp", String.format("%.3f", robot.hoodGate.getLastCompensation()));
             Telemetry.log("Loop ms", String.format("%.1f", loopMs));
+            Telemetry.log("Shot mode", robot.shooter.isOdoMode() ? "ODO" : "FIXED");
             Telemetry.log("Target RPM", String.format("%.1f", robot.shooter.getTargetRpm()));
             Telemetry.log("Current RPM", String.format("%.1f", robot.shooter.getCurrentRpm()));
             Telemetry.log("At speed", String.valueOf(robot.shooter.atSpeed()));
