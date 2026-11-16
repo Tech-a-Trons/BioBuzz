@@ -12,8 +12,8 @@ import dev.nextftc.robot.Mechanism;
 public class Ramp implements Mechanism {
     // Fill these in using RampTuner
     public static final double RAMP_ZERO = 0.0;
-    private static final double RAMP_UP   = 0.1;  // TODO: tune
-    private static final double RAMP_DOWN = 0.42;  // TODO: tune
+    private static final double RAMP_UP   = 0.09;  // TODO: tune
+    private static final double RAMP_DOWN = 0.44;  // TODO: tune
 
     private Servo rampRight, rampLeft;
     private double rampPos = Double.NaN;

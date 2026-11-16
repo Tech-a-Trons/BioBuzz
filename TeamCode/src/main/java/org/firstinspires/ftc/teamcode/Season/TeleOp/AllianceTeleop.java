@@ -102,7 +102,7 @@ public abstract class AllianceTeleop extends NextOpMode {
         //gp1.x().onTrue(robot.intakeTransfer.transfer());
 
         // Hood / gate presets
-        gp1.dpadUp().onTrue(robot.hoodGate.presetUp());
+        gp1.dpadLeft().onTrue(robot.hoodGate.presetUp());
         gp1.dpadDown().onTrue(robot.flowerRamp.down());
         gp1.dpadDown().onTrue(robot.hoodGate.presetDown());
 
@@ -134,6 +134,12 @@ public abstract class AllianceTeleop extends NextOpMode {
             feedTimer.reset();
             feedPending = true;
         }
+
+        robot.hoodGate.applyVelocityCompensation(
+                robot.shooter.isSpinning(),
+                robot.shooter.getTargetRpm(),
+                robot.shooter.getCurrentRpm()
+        );
 
         if (feedPending && feedTimer.milliseconds() >= GATE_OPEN_DELAY_MS) {
             robot.intakeTransfer.feed().schedule(); // TurretOp: transfer -1, intake 1
