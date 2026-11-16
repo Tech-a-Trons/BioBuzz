@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1;
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -13,22 +13,28 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import dev.nextftc.robot.Mechanism;
 
 /**
- * Flywheel shooter with properly scaled feedforward + PID velocity control (in deg/sec).
+ * Two-motor flywheel shooter, feedforward + PID velocity control (deg/sec).
+ * "outtakeleft"  = commanded motor, the only one whose encoder is read.
+ * "outtakeright" = follower, just gets the same computed power as the left.
  */
 public class FlywheelShooter implements Mechanism {
     // ---- tuned constants (units in deg/sec) ----
-    private static final double kS = 0.02;
-    private static final double kV = 0.004;   // ~0.45 power at 1800 deg/s (300 RPM)
-    private static final double kP = 0.009;    // smooth velocity error correction
-    private static final double kI = 0.00001;
+    private static final double kS = 0.15;
+    private static final double kV = 0.000027;
+    private static final double kP = 0.00003;
+    private static final double kI = 0.0000;
     private static final double kD = 0.0;
 
-    private static final double TARGET_RPM = 16.0;                      // 300 RPM
-    private static final double DEG_PER_SEC_PER_RPM = 6.0;               // 1 RPM = 6 deg/sec
-    private static final double MAX_INTEGRAL = 0.2;
-    private static final double SHOOTER_SIGN = -1;
+    private static final double TARGET_RPM = 1800;
+    private static final double DEG_PER_SEC_PER_RPM = 6.0;
+    private static final double MAX_INTEGRAL = 0;
 
-    private DcMotorEx motor;
+    // Direction of each motor. If the right motor fights the left, flip RIGHT_SIGN.
+    private static final double LEFT_SIGN = -1;
+    private static final double RIGHT_SIGN = 1;
+
+    private DcMotorEx motorLeft;   // commanded + encoder
+    private DcMotorEx motorRight;  // follower
     private Follower follower;
     private GoalSelector goal;
 
@@ -43,10 +49,16 @@ public class FlywheelShooter implements Mechanism {
         this.follower = follower;
         this.goal = goal;
 
-        motor = hardwareMap.get(DcMotorEx.class, "outtakeleft");
-        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        motorLeft = hardwareMap.get(DcMotorEx.class, "outtakeleft");
+        motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        // Right motor never uses its encoder; it only mirrors the left's power.
+        motorRight = hardwareMap.get(DcMotorEx.class, "outtakeright");
+
+        motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
 
     public void setSpinning(boolean on) {
@@ -65,7 +77,7 @@ public class FlywheelShooter implements Mechanism {
     }
 
     private void update() {
-        if (motor == null) return;
+        if (motorLeft == null || motorRight == null) return;
         if (!enabled) {
             integral = 0;
             lastError = 0;
@@ -80,7 +92,8 @@ public class FlywheelShooter implements Mechanism {
         double dt = timer.seconds();
         timer.reset();
 
-        rawDegPerSec = motor.getVelocity(AngleUnit.DEGREES);
+        // Only the left motor's encoder is used for feedback
+        rawDegPerSec = motorLeft.getVelocity(AngleUnit.DEGREES);
         double currentDegPerSec = Math.abs(rawDegPerSec);
         currentRpm = currentDegPerSec / DEG_PER_SEC_PER_RPM;
 
@@ -95,16 +108,17 @@ public class FlywheelShooter implements Mechanism {
         double derivative = (dt > 0) ? (errorDegPerSec - lastError) / dt : 0;
         lastError = errorDegPerSec;
 
-        // Feedforward + smooth PID velocity loop
         power = kS + kV * targetDegPerSec + kP * errorDegPerSec + integral + kD * derivative;
         power = Range.clip(power, 0, 1);
 
-        write(SHOOTER_SIGN * power);
+        write(power);
     }
 
+    /** p is the unsigned shooter power (0..1); each motor applies its own direction. */
     private void write(double p) {
         if (Math.abs(p - lastWritten) > 0.002 || (p == 0 && lastWritten != 0)) {
-            motor.setPower(p);
+            motorLeft.setPower(LEFT_SIGN * p);
+            motorRight.setPower(RIGHT_SIGN * p);
             lastWritten = p;
         }
     }

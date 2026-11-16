@@ -98,11 +98,12 @@ public abstract class AllianceTeleop extends NextOpMode {
         gp1.leftBumper().onTrue(robot.intakeTransfer.stop());
         gp1.leftBumper().onTrue(robot.hoodGate.closeGate());
         gp1.leftBumper().onTrue(instant(() -> feedPending = false));
-
+        gp1.leftBumper().onTrue(robot.flowerRamp.up());
         //gp1.x().onTrue(robot.intakeTransfer.transfer());
 
         // Hood / gate presets
         gp1.dpadUp().onTrue(robot.hoodGate.presetUp());
+        gp1.dpadDown().onTrue(robot.flowerRamp.down());
         gp1.dpadDown().onTrue(robot.hoodGate.presetDown());
 
         //Flower Ramp controls
@@ -179,10 +180,9 @@ public abstract class AllianceTeleop extends NextOpMode {
             Pose pose = follower.pose();
             Telemetry.log("Pose", String.format("x=%.1f y=%.1f h=%.0f", pose.x(), pose.y(), Math.toDegrees(pose.heading())));
             Telemetry.log("Goal", String.format("(%.0f, %.0f) %s", robot.goal.x(), robot.goal.y(), robot.goal.isUpper() ? "upper" : "lower"));
-            Telemetry.log("Turret deg", String.format("want %.1f / now %.1f", robot.turret.getTargetDeg(), robot.turret.getCurrentDeg()));
             Telemetry.log("Gate pos", String.format("%.2f", robot.hoodGate.getGatePosition()));
             Telemetry.log("Loop ms", String.format("%.1f", loopMs));
-            Telemetry.log("Shot mode", robot.shooter.isOdoMode() ? "ODO" : "FIXED");
+
             Telemetry.log("Target RPM", String.format("%.1f", robot.shooter.getTargetRpm()));
             Telemetry.log("Current RPM", String.format("%.1f", robot.shooter.getCurrentRpm()));
             Telemetry.log("At speed", String.valueOf(robot.shooter.atSpeed()));

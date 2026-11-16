@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1
 import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1.HoodGate;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1.IntakeTransfer;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1.GoalSelector;
+import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1.Ramp;
 
 import java.util.Set;
 
@@ -26,10 +27,11 @@ public class ProtoBot implements NextRobot {
     public final GoalSelector goal = new GoalSelector();
     public final FlywheelShooter shooter = new FlywheelShooter();
     public final hiveTip tip = new hiveTip();
+    public final Ramp flowerRamp  = new Ramp();
     //public final FlowerTaker flower = new FlowerTaker();
 
     // EasyTurret is a plain class (not a Mechanism), so it's a field but not in getMechanisms()
-    public final EasyTurret turret = new EasyTurret();
+//    public final EasyTurret turret = new EasyTurret();
 
     /**
      * The new subsystems grab their hardware in init(hardwareMap), so call this once
@@ -42,11 +44,12 @@ public class ProtoBot implements NextRobot {
         //flower.init(hardwareMap);
         hoodGate.init(hardwareMap);
         shooter.init(hardwareMap, follower, goal);
-        turret.init(hardwareMap, follower, goal);
+        flowerRamp.init(hardwareMap);
+//        turret.init(hardwareMap, follower, goal);
     }
 
     @Override
     public Set<Mechanism> getMechanisms() {
-        return Set.of(drive, intakeTransfer, hoodGate, shooter, tip);
+        return Set.of(drive, intakeTransfer, hoodGate, shooter, tip, flowerRamp);
     }
 }
