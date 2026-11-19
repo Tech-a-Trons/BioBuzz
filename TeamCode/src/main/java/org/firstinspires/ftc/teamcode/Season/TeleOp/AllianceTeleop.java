@@ -22,7 +22,7 @@ public abstract class AllianceTeleop extends NextOpMode {
     // Used only if Auto didn't leave a pose in PoseStorage. Set to where you really place the robot.
     // Heading is radians; blue is the mirror of red (x -> 141.5 - x, heading -> pi - heading).
     private static final Pose FALLBACK_RED  = new Pose(70.75, 8.6, Math.toRadians(270));
-    private static final Pose FALLBACK_BLUE = new Pose(141.5 - 70.75, 70.75, Math.PI - Math.toRadians(270));
+    private static final Pose FALLBACK_BLUE = new Pose(141.5 -   70.75, 70.75, Math.PI - Math.toRadians(270));
 
     // Relocalization pose for dpad right (START_POSE from TurretOp, which was set up for BLUE).
     // Red is the mirror of blue.

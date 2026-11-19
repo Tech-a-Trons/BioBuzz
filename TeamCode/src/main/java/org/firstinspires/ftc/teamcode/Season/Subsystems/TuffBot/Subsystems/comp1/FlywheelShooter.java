@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.ivy.Command;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -21,11 +22,11 @@ public class FlywheelShooter implements Mechanism {
     // ---- tuned constants (units in deg/sec) ----
     private static final double kS = 0.15;
     private static final double kV = 0.000027;
-    private static final double kP = 0.00005;
+    private static final double kP = 0.000045;
     private static final double kI = 0.0000;
     private static final double kD = 0.0;
 
-    private static final double TARGET_RPM = 1420;
+    private static final double TARGET_RPM = 1430;
     private static final double DEG_PER_SEC_PER_RPM = 6.0;
     private static final double MAX_INTEGRAL = 0;
 
@@ -61,13 +62,15 @@ public class FlywheelShooter implements Mechanism {
         motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
 
-    public void setSpinning(boolean on) {
-        if (on && !enabled) {
-            integral = 0;
-            lastError = 0;
-            timer.reset();
-        }
-        enabled = on;
+    public Command setSpinning(boolean on) {
+        return instant(() -> {
+            if (on && !enabled) {
+                integral = 0;
+                lastError = 0;
+                timer.reset();
+            }
+            enabled = on;
+        });
     }
 
     @Override

@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.Season.Auto;
 import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.commands.Commands.waitMs;
+import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
@@ -32,28 +34,35 @@ public class SoloRed extends NextOpMode {
 
     //Sets all of the points that the robot needs to go to
     private final PoseFactory poseFactory = PoseFactory.degrees();
+    private final Pose special = poseFactory.of(16.72, 5.09, 185);
+    private final Pose jig = poseFactory.of(43.31, 119.61, 90);
+    private final Pose jig2 = poseFactory.of(43.31, 123.21, 90);
+    private final Pose jig3 = poseFactory.of(-0.25, 58.2, 180);
+    private final Pose jig4 = poseFactory.of(-1, 58.33, 180);
+
 
     private final Pose start = poseFactory.of(56, 8, 90);
     private final Pose path1 = poseFactory.of(55.6829, 23.7929, 90);
     private final Pose point2Start = poseFactory.of(55.6829, 23.7929, 90);
-    private final Pose point2 = poseFactory.of(55.787, 18.1694, 180);
-    private final Pose point3 = poseFactory.of(15.8234, 18.2742, 180);
-    private final Pose point4Start = poseFactory.of(15.8234, 18.2742, 180);
+    private final Pose point2 = poseFactory.of(56.1752, 7.882, 180);
+    private final Pose point3 = poseFactory.of(8.6416, 4.5901, 185);
+    private final Pose point4Start = poseFactory.of(8.6416, 4.5901, 180);
     private final Pose point4 = poseFactory.of(57.2236, 112.8884, 270);
-    private final Pose point4Control1 = poseFactory.of(16.8382, 111.888, 0);
+    private final Pose point4Control1 = poseFactory.of(21.9819, 122.0783, 0);
     private final Pose point5Start = poseFactory.of(57.2236, 112.8884, 270);
-    private final Pose point5 = poseFactory.of(46.6589, 112.3914, 90);
-    private final Pose point6 = poseFactory.of(46.8853, 124.7758, 90);
-    private final Pose point7 = poseFactory.of(46.9076, 112.0852, 90);
-    private final Pose point8Start = poseFactory.of(46.9076, 112.0852, 90);
-    private final Pose point8 = poseFactory.of(57.0758, 112.8084, 270);
-    private final Pose point9Start = poseFactory.of(57.0758, 112.8084, 270);
-    private final Pose point9 = poseFactory.of(24.9021, 47.1233, 180);
-    private final Pose point9Control1 = poseFactory.of(26.0932, 112.3367, 0);
-    private final Pose point10 = poseFactory.of(17.4433, 47.167, 180);
-    private final Pose point11 = poseFactory.of(25.046, 47.1386, 180);
-    private final Pose point12Start = poseFactory.of(25.046, 47.1386, 180);
-    private final Pose point12 = poseFactory.of(55.7031, 23.6992, 90);
+    private final Pose point5 = poseFactory.of(43.068, 112.3914, 90);
+    private final Pose point6 = poseFactory.of(43.2944, 127.4933, 90);
+    private final Pose point7 = poseFactory.of(43.1226, 112.4734, 90);
+    private final Pose point8Start = poseFactory.of(43.1226, 112.4734, 90);
+    private final Pose point8 = poseFactory.of(52.9996, 113.1966, 270);
+    private final Pose point9Start = poseFactory.of(52.9996, 113.1966, 270);
+    private final Pose point9 = poseFactory.of(15.9734, 57.4107, 180);
+    private final Pose point9Control1 = poseFactory.of(13.8648, 114.3748, 0);
+    private final Pose point10 = poseFactory.of(-2.15, 58.4249, 180);
+    private final Pose point11 = poseFactory.of(8.6444, 57.426, 180);
+    private final Pose point12Start = poseFactory.of(8.6444, 57.426, 180);
+    private final Pose point12 = poseFactory.of(46.7744, 23.7963, 90);
+    private final Pose point12Control1 = poseFactory.of(25.9654, 28.7487, 0);
 
     public Path path1() {
         return Paths.line(start, path1).constant(path1);
@@ -79,10 +88,6 @@ public class SoloRed extends NextOpMode {
         return Paths.line(point5, point6).constant(point6);
     }
 
-    public Path path7() {
-        return Paths.line(point6, point7).constant(point7);
-    }
-
     public Path path8() {
         return Paths.line(point8Start, point8).linear(point8Start, point8);
     }
@@ -95,30 +100,126 @@ public class SoloRed extends NextOpMode {
         return Paths.line(point9, point10).constant(point10);
     }
 
-    public Path path11() {
-        return Paths.line(point10, point11).constant(point11);
-    }
 
     public Path path12() {
-        return Paths.line(point12Start, point12).linear(point12Start, point12);
+        return Paths.curve(point12Start, point12Control1, point12).linear(point12Start, point12);
     }
+
+    public Path path7() {
+        return Paths.line(jig2, point7).constant(point7);
+    }
+    public Path special() {
+        return Paths.line(point3, special).constant(special);
+    }
+
+    public Path special2() {
+        return Paths.line(special, point3).constant(point3);
+    }
+    public Path jig1() {
+        return Paths.line(point6, jig).constant(jig);
+    }
+
+    public Path jig2() {
+        return Paths.line(jig, jig2).constant(jig2);
+    }
+    public Path jig3() {
+        return Paths.line(point10, jig3).constant(jig3);
+    }
+    public Path jig4() {
+        return Paths.line(jig3, jig4).constant(jig4);
+    }
+    public Path path11() {
+        return Paths.line(jig4, point11).constant(point11);
+    }
+
+    Command gardenw() {return waitMs(500);}
+    Command flowerw() {return waitMs(450);}
+    Command shooter() {return waitMs(1000);}
+    Command quick() {return waitMs(600);}
+
 
     //Sequentially calls all of the paths
     private Command autoRoutine() {
         return sequential(
-                follow(follower, path1()),
+                robot.flowerRamp.up(),
+                parallel(robot.shooter.setSpinning(true),
+                        robot.hoodGate.openGate()),
+                quick(),
+                robot.intakeTransfer.feed(),
+                shooter(),
+                parallel(robot.shooter.setSpinning(false),
+                        robot.hoodGate.closeGate(),
+                        robot.intakeTransfer.stop()
+                ),
+                //quick(),
+//                parallel(
+//                        robot.hoodGate.closeGate(),
+//                        robot.flowerRamp.up()
+//                ),
                 //Call mechanisms here
                 //follow(follower, path2()),
-                follow(follower, path3()),
+                follow(follower, path1()),
+                robot.intakeTransfer.feedSlow(),
+                follow(follower, path3().with(Constants.foresightConfig.maxPathSpeed.at(.35))),
+                quick(),
+                follow(follower, special().with(Constants.foresightConfig.maxPathSpeed.at(.5))),
+                follow(follower, special2().with(Constants.foresightConfig.maxPathSpeed.at(.5))),
+                gardenw(),
+                robot.intakeTransfer.stop(),
                 follow(follower, path4()),
+                parallel(robot.shooter.setSpinning(true),
+                        robot.hoodGate.openGate()),
+                quick(),
+                robot.intakeTransfer.feed(),
+                shooter(),
+                parallel(robot.shooter.setSpinning(false),
+                        robot.hoodGate.closeGate(),
+                        robot.intakeTransfer.stop()
+                ),
                 follow(follower, path5()),
-                follow(follower, path6()),
-                follow(follower, path7()),
+                parallel(
+                        robot.flowerRamp.down(),
+                        robot.intakeTransfer.feedSlow()
+                ),
+                follow(follower, path6().with(Constants.foresightConfig.maxPathSpeed.at(0.33))),
+                flowerw(),
+                follow(follower, jig1().with(Constants.foresightConfig.maxPathSpeed.at(0.33))),
+                follow(follower, jig2().with(Constants.foresightConfig.maxPathSpeed.at(0.35))),
+                follow(follower, path7().with(Constants.foresightConfig.maxPathSpeed.at(0.5))),
+                parallel(robot.intakeTransfer.stop(),
+                        robot.flowerRamp.up()),
                 follow(follower, path8()),
+                parallel(robot.shooter.setSpinning(true),
+                        robot.hoodGate.openGate()),
+                quick(),
+                robot.intakeTransfer.feed(),
+                shooter(),
+                parallel(robot.shooter.setSpinning(false),
+                        robot.hoodGate.closeGate(),
+                        robot.intakeTransfer.stop()
+                ),
                 follow(follower, path9()),
-                follow(follower, path10()),
-                follow(follower, path11()),
-                follow(follower, path12())
+                parallel(
+                        robot.flowerRamp.down(),
+                        robot.intakeTransfer.feedSlow()
+                ),
+                follow(follower, path10().with(Constants.foresightConfig.maxPathSpeed.at(0.33))),
+                flowerw(),
+                follow(follower, jig3().with(Constants.foresightConfig.maxPathSpeed.at(0.33))),
+                follow(follower, jig4().with(Constants.foresightConfig.maxPathSpeed.at(0.35))),
+                follow(follower, path11().with(Constants.foresightConfig.maxPathSpeed.at(0.5))),
+                parallel(robot.intakeTransfer.stop(),
+                        robot.flowerRamp.up()),
+                follow(follower, path12()),
+                parallel(robot.shooter.setSpinning(true),
+                        robot.hoodGate.openGate()),
+                quick(),
+                robot.intakeTransfer.feed(),
+                shooter(),
+                parallel(robot.shooter.setSpinning(false),
+                        robot.hoodGate.closeGate(),
+                        robot.intakeTransfer.stop()
+                )
         );
     }
 
@@ -133,6 +234,8 @@ public class SoloRed extends NextOpMode {
         follower = Constants.create(hardwareMap);
         follower.setPose(start);
         follower.update();
+
+        robot.init(hardwareMap,follower,"RED");
     }
 
     //Runs once at start

@@ -12,7 +12,7 @@ import dev.nextftc.robot.Mechanism;
 /** Hood + gate servos with velocity loss compensation. */
 public class HoodGate implements Mechanism {
     private static final double GATE_OPEN   = 0;
-    private static final double GATE_CLOSED = 0.3;
+    private static final double GATE_CLOSED = 0.25;
 
     private static final double HOOD_UP   = 0.65;   // dpad up
     private static final double HOOD_DOWN = 0.8;  // dpad down

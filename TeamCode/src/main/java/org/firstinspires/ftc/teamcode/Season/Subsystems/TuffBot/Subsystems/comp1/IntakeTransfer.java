@@ -30,4 +30,6 @@ public class IntakeTransfer implements Mechanism {
     public Command stop()     { return instant(() -> set(0, 0)); }      // left bumper
 
     public Command transfer() {return instant(() -> set(0, -1));} // gamepad x
+    public Command repel() {return instant(() -> set(-1, 1));} // gamepad x
+
 }
