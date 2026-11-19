@@ -135,11 +135,11 @@ public abstract class AllianceTeleop extends NextOpMode {
             feedPending = true;
         }
 
-        robot.hoodGate.applyVelocityCompensation(
-                robot.shooter.isSpinning(),
-                robot.shooter.getTargetRpm(),
-                robot.shooter.getCurrentRpm()
-        );
+//        robot.hoodGate.applyVelocityCompensation(
+//                robot.shooter.isSpinning(),
+//                robot.shooter.getTargetRpm(),
+//                robot.shooter.getCurrentRpm()
+//        );
 
         if (feedPending && feedTimer.milliseconds() >= GATE_OPEN_DELAY_MS) {
             robot.intakeTransfer.feed().schedule(); // TurretOp: transfer -1, intake 1

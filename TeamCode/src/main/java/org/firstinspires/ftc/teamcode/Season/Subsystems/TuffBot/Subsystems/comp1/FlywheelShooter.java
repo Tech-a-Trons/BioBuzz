@@ -21,11 +21,11 @@ public class FlywheelShooter implements Mechanism {
     // ---- tuned constants (units in deg/sec) ----
     private static final double kS = 0.15;
     private static final double kV = 0.000027;
-    private static final double kP = 0.000042   ;
+    private static final double kP = 0.00005;
     private static final double kI = 0.0000;
     private static final double kD = 0.0;
 
-    private static final double TARGET_RPM = 1790;
+    private static final double TARGET_RPM = 1420;
     private static final double DEG_PER_SEC_PER_RPM = 6.0;
     private static final double MAX_INTEGRAL = 0;
 

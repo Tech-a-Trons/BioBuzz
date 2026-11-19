@@ -14,8 +14,8 @@ public class HoodGate implements Mechanism {
     private static final double GATE_OPEN   = 0;
     private static final double GATE_CLOSED = 0.3;
 
-    private static final double HOOD_UP   = 0.35;   // dpad up
-    private static final double HOOD_DOWN = 0.475;  // dpad down
+    private static final double HOOD_UP   = 0.65;   // dpad up
+    private static final double HOOD_DOWN = 0.8;  // dpad down
 
     private static final double HOOD_COMP_GAIN = -0.15;   // Hood adjustment for velocity loss percentage drop
 
