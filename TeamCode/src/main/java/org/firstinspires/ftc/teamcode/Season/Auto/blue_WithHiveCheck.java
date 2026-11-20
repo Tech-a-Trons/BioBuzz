@@ -32,13 +32,13 @@ public class blue_WithHiveCheck extends NextOpMode {
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
-    private final Pose shootUp = poseFactory.of(84, 134, 90);
-    private final Pose garden = poseFactory.of(137.6937, 134.8121, 0);
+    private final Pose shootUp = poseFactory.of(84, 134, 270);
+    private final Pose garden = poseFactory.of(100, 134.8121, 0);
     private final Pose shootDown = poseFactory.of(84, 6.9455, 90);
 
     // Autonomous routine
     public Command autoRoutine() {
-        if (!robot.tip.checkBlue()) {
+        if (robot.tip.checkBlue()) {
             return sequential(
                     follow(follower, Intake1()),
                     follow(follower, Garden_to_Shoot()),
