@@ -51,6 +51,7 @@ public abstract class AllianceTeleop extends NextOpMode {
     private final ElapsedTime loopTimer = new ElapsedTime();
     private final ElapsedTime telemetryTimer = new ElapsedTime();
     boolean lastTrigger = false;
+    boolean lastShooterTrigger = false;
     int x = 0;
 
     protected AllianceTeleop(ProtoBot robot, String alliance) {
@@ -135,11 +136,11 @@ public abstract class AllianceTeleop extends NextOpMode {
             feedPending = true;
         }
 
-//        robot.hoodGate.applyVelocityCompensation(
-//                robot.shooter.isSpinning(),
-//                robot.shooter.getTargetRpm(),
-//                robot.shooter.getCurrentRpm()
-//        );
+        robot.hoodGate.applyVelocityCompensation(
+                robot.shooter.isSpinning(),
+                robot.shooter.getTargetRpm(),
+                robot.shooter.getCurrentRpm()
+        );
 
         if (feedPending && feedTimer.milliseconds() >= GATE_OPEN_DELAY_MS) {
             robot.intakeTransfer.feed().schedule(); // TurretOp: transfer -1, intake 1
@@ -154,7 +155,11 @@ public abstract class AllianceTeleop extends NextOpMode {
         follower.update();
 
         // Shooter spins while the right trigger is held
-        robot.shooter.setSpinning(gamepad1.right_trigger_pressed);
+        boolean shooterTrigger = gamepad1.right_trigger_pressed;
+        if (shooterTrigger != lastShooterTrigger) {          // only on press / release
+            robot.shooter.setSpinning(shooterTrigger).schedule();
+            lastShooterTrigger = shooterTrigger;
+        }
 //
 //        boolean trigger = gamepad1.left_trigger_pressed;
 //        boolean triggerJustPressed = trigger && !lastTrigger;   // rising edge only
@@ -188,7 +193,8 @@ public abstract class AllianceTeleop extends NextOpMode {
             Telemetry.log("Goal", String.format("(%.0f, %.0f) %s", robot.goal.x(), robot.goal.y(), robot.goal.isUpper() ? "upper" : "lower"));
             Telemetry.log("Gate pos", String.format("%.2f", robot.hoodGate.getGatePosition()));
             Telemetry.log("Loop ms", String.format("%.1f", loopMs));
-
+            Telemetry.log("Hood pos", String.format("%.3f", robot.hoodGate.getHoodPosition()));
+            Telemetry.log("Hood comp", String.format("%.3f", robot.hoodGate.getLastCompensation()));
             Telemetry.log("Target RPM", String.format("%.1f", robot.shooter.getTargetRpm()));
             Telemetry.log("Current RPM", String.format("%.1f", robot.shooter.getCurrentRpm()));
             Telemetry.log("At speed", String.valueOf(robot.shooter.atSpeed()));
@@ -199,7 +205,7 @@ public abstract class AllianceTeleop extends NextOpMode {
     @Override
     public void end() {
         Telemetry.log("Status", "End");
-        robot.shooter.setSpinning(false);
+        robot.shooter.setSpinning(false).schedule();
         robot.intakeTransfer.stop().schedule();
     }
 }

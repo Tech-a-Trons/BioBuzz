@@ -17,8 +17,11 @@ public class HoodGate implements Mechanism {
     private static final double HOOD_UP   = 0.65;   // dpad up
     private static final double HOOD_DOWN = 0.8;  // dpad down
 
-    private static final double HOOD_COMP_GAIN = -0.15;   // Hood adjustment for velocity loss percentage drop
+//    private static final double HOOD_COMP_GAIN = 0.15;   // Hood adjustment for velocity loss percentage drop
 
+    private static final double HOOD_COMP_GAIN = 1.0;    // servo units per 100% RPM error (start here, then tune)
+    private static final double HOOD_COMP_MAX  = 0.10;   // max shift in either direction
+    private static final double ERR_FILTER     = 0.3;    // 0..1, lower = smoother but slower
     private Servo hood, gate;
     private double hoodPos = Double.NaN, gatePos = Double.NaN;
     private double activeBaseHood = HOOD_UP;
@@ -53,28 +56,30 @@ public class HoodGate implements Mechanism {
     /**
      * Compensates hood position for flywheel velocity loss (voltage sag / recovery lag).
      */
+
+
+    private double filteredErrPct = 0.0;
+
     public void applyVelocityCompensation(boolean isSpinning, double targetRpm, double currentRpm) {
         if (hood == null) return;
 
         if (!isSpinning || targetRpm <= 0) {
-            setHood(activeBaseHood);
+            filteredErrPct = 0.0;
             lastComp = 0.0;
+            setHood(activeBaseHood);
             return;
         }
 
-        // Velocity loss compensation (percentage RPM drop)
-        double rpmDropPct = (targetRpm - currentRpm) / targetRpm;
+        // + when the flywheel is slow, - when it's fast
+        double errPct = (targetRpm - currentRpm) / targetRpm;
+        filteredErrPct += ERR_FILTER * (errPct - filteredErrPct);
 
-        if (rpmDropPct > 0.02) {
-            double comp = Range.clip(rpmDropPct * HOOD_COMP_GAIN, 0.0, 0.08);
-            double compensatedPos = Range.clip(activeBaseHood - comp, 0.05, 0.95);
-            setHood(compensatedPos);
-            lastComp = -comp;
-        } else {
-            setHood(activeBaseHood);
-            lastComp = 0.0;
-        }
+        double comp = Range.clip(filteredErrPct * HOOD_COMP_GAIN, -HOOD_COMP_MAX, HOOD_COMP_MAX);
+        setHood(Range.clip(activeBaseHood - comp, 0.05, 0.95));
+        lastComp = -comp;
     }
+
+    public double getHoodPosition() { return hoodPos; }
 
     public double getGatePosition() { return gatePos; }
     public double getLastCompensation() { return lastComp; }
