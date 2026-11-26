@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -20,15 +21,20 @@ import dev.nextftc.robot.Mechanism;
  */
 public class FlywheelShooter implements Mechanism {
     // ---- tuned constants (units in deg/sec) ----
-    private static final double kS = 0.15;
+    private static final double kS = 0.1;
     private static final double kV = 0.000027;
-    private static final double kP = 0.000046;
+    private static final double kP = 0.00007;
     private static final double kI = 0.0000;
     private static final double kD = 0.0;
 
-    private static final double TARGET_RPM = 1380;
+    private static final double TARGET_RPM = 1010;
     private static final double DEG_PER_SEC_PER_RPM = 6.0;
     private static final double MAX_INTEGRAL = 0;
+
+    // Multiplies the encoder's deg/sec reading so it matches the real flywheel speed.
+    // Calibrate: set kP = 0, hold the trigger until it settles, read Current RPM,
+    // then VELOCITY_SCALE = 1380 / (that reading). Restore kP afterwards.
+    private static final double VELOCITY_SCALE = 1.0;
 
     // Direction of each motor. If the right motor fights the left, flip RIGHT_SIGN.
     private static final double LEFT_SIGN = -1;
@@ -36,6 +42,7 @@ public class FlywheelShooter implements Mechanism {
 
     private DcMotorEx motorLeft;   // commanded + encoder
     private DcMotorEx motorRight;  // follower
+    private Servo light;
     private Follower follower;
     private GoalSelector goal;
 
@@ -55,6 +62,8 @@ public class FlywheelShooter implements Mechanism {
         motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
+//        light = hardwareMap.get(Servo.class, "light");
+//        light.setPosition(0);
         // Right motor never uses its encoder; it only mirrors the left's power.
         motorRight = hardwareMap.get(DcMotorEx.class, "outtakeright");
 
@@ -73,10 +82,21 @@ public class FlywheelShooter implements Mechanism {
         });
     }
 
+//    @Override
+//    public void periodic() {
+//        Mechanism.super.periodic();
+//        update();
+//    }
+
+    // FlywheelShooter.java
+    private ShooterLeds leds;
+    public void setLeds(ShooterLeds leds) { this.leds = leds; }
+
     @Override
     public void periodic() {
         Mechanism.super.periodic();
         update();
+        if (leds != null) leds.update();
     }
 
     private void update() {
@@ -96,7 +116,7 @@ public class FlywheelShooter implements Mechanism {
         timer.reset();
 
         // Only the left motor's encoder is used for feedback
-        rawDegPerSec = motorLeft.getVelocity(AngleUnit.DEGREES);
+        rawDegPerSec = motorLeft.getVelocity(AngleUnit.DEGREES) * VELOCITY_SCALE;
         double currentDegPerSec = Math.abs(rawDegPerSec);
         currentRpm = currentDegPerSec / DEG_PER_SEC_PER_RPM;
 
@@ -113,6 +133,10 @@ public class FlywheelShooter implements Mechanism {
 
         power = kS + kV * targetDegPerSec + kP * errorDegPerSec + integral + kD * derivative;
         power = Range.clip(power, 0, 1);
+
+//        if (errorDegPerSec <=100 && errorDegPerSec >= 0) {
+//            light.setPosition(0.5);
+//        }
 
         write(power);
     }

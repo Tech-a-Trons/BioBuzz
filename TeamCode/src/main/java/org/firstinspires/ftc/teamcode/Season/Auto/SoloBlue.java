@@ -55,41 +55,89 @@ public class SoloBlue extends NextOpMode {
     private final Pose point2 = rotate(56.1752, 7.882, 180);
     private final Pose point3 = rotate(8.6416, 4.5901, 185);
     private final Pose point4Start = rotate(8.6416, 4.5901, 180);
-    private final Pose point4 = rotate(57.2236, 112.8884, 270);
+    private final Pose point4 = rotate(48.7, 129, 270);
     private final Pose point4Control1 = rotate(21.9819, 122.0783, 0);
-    private final Pose point5Start = rotate(57.2236, 112.8884, 270);
+    private final Pose point4Control2 = rotate(59.0194, 112.8552, 0);
+    private final Pose point5Start = rotate(48.7, 129, 270);
     private final Pose point5 = rotate(43.068, 112.3914, 90);
-    private final Pose point6 = rotate(43.2944, 127.4933, 90);
-    private final Pose point7 = rotate(43.1226, 112.4734, 90);
+    private final Pose point6 = rotate(43.2944, 129.4933, 90);
+    private final Pose point7 = rotate(43.1226, 106.4734, 90);
     private final Pose point8Start = rotate(43.1226, 112.4734, 90);
-    private final Pose point8 = rotate(52.9996, 113.1966, 270);
-    private final Pose point9Start = rotate(52.9996, 113.1966, 270);
-    private final Pose point9 = rotate(15.9734, 57.4107, 180);
-    private final Pose point9Control1 = rotate(13.8648, 114.3748, 0);
-    private final Pose point10 = rotate(-2.15, 58.4249, 180);
-    private final Pose point11 = rotate(8.6444, 57.426, 180);
-    private final Pose point12Start = rotate(8.6444, 57.426, 180);
-    private final Pose point12 = rotate(46.7744, 23.7963, 90);
-    private final Pose point12Control1 = rotate(25.9654, 28.7487, 0);
+    private final Pose point8 = rotate(54.938, 112.6384, 260);
+    private final Pose point9 = rotate(54.9036, 130, 270);
+    private final Pose point10 = rotate(54.8896, 112.6602, 270);
+    private final Pose point11 = rotate(11.5767, 112.6181, 270);
 
-    public Path path1()  { return Paths.line(start, path1).constant(path1); }
-    public Path path2()  { return Paths.line(point2Start, point2).linear(point2Start, point2); }
-    public Path path3()  { return Paths.line(point2, point3).constant(point3); }
-    public Path path4()  { return Paths.curve(point4Start, point4Control1, point4).linear(point4Start, point4); }
-    public Path path5()  { return Paths.line(point5Start, point5).linear(point5Start, point5); }
-    public Path path6()  { return Paths.line(point5, point6).constant(point6); }
-    public Path path7()  { return Paths.line(jig2, point7).constant(point7); }
-    public Path path8()  { return Paths.line(point8Start, point8).linear(point8Start, point8); }
-    public Path path9()  { return Paths.curve(point9Start, point9Control1, point9).linear(point9Start, point9); }
-    public Path path10() { return Paths.line(point9, point10).constant(point10); }
-    public Path path11() { return Paths.line(jig4, point11).constant(point11); }
-    public Path path12() { return Paths.curve(point12Start, point12Control1, point12).linear(point12Start, point12); }
-    public Path special()  { return Paths.line(point3, special).constant(special); }
-    public Path special2() { return Paths.line(special, point3).constant(point3); }
-    public Path jig1() { return Paths.line(point6, jig).constant(jig); }
-    public Path jig2() { return Paths.line(jig, jig2).constant(jig2); }
-    public Path jig3() { return Paths.line(point10, jig3).constant(jig3); }
-    public Path jig4() { return Paths.line(jig3, jig4).constant(jig4); }
+    public Path path1() {
+        return Paths.line(start, path1).constant(path1);
+    }
+
+    public Path path2() {
+        return Paths.line(point2Start, point2).linear(point2Start, point2);
+    }
+
+    public Path path3() {
+        return Paths.line(point2, point3).constant(point3);
+    }
+
+    public Path path4() {
+        return Paths.curve(point4Start, point4Control1, point4Control2, point4).linear(point4Start, point4);
+    }
+
+    public Path path5() {
+        return Paths.line(point5Start, point5).linear(point5Start, point5);
+    }
+
+    public Path path6() {
+        return Paths.line(point5, point6).constant(point6);
+    }
+
+    public Path path8() {
+        return Paths.line(point8Start, point8).linear(point8Start, point8);
+    }
+
+    public Path path9() {
+        return Paths.line(point8, point9).constant(point9);
+    }
+    public Path path10() {
+        return Paths.line(point9, point10).constant(point10);
+    }
+
+    public Path path11() {
+        return Paths.line(point10, point11).constant(point11);
+    }
+
+
+//    public Path path9() {
+//        return Paths.curve(point9Start, point9Control1, point9).linear(point9Start, point9);
+//    }
+//
+//    public Path path10() {
+//        return Paths.line(point9, point10).constant(point10);
+//    }
+//
+//
+//    public Path path12() {
+//        return Paths.curve(point12Start, point12Control1, point12).linear(point12Start, point12);
+//    }
+
+    public Path path7() {
+        return Paths.line(jig2, point7).constant(point7);
+    }
+    public Path special() {
+        return Paths.line(point3, special).constant(special);
+    }
+
+    public Path special2() {
+        return Paths.line(special, point3).constant(point3);
+    }
+    public Path jig1() {
+        return Paths.line(point6, jig).constant(jig);
+    }
+
+    public Path jig2() {
+        return Paths.line(jig, jig2).constant(jig2);
+    }
 
     Command gardenw() { return waitMs(500); }
     Command flowerw() { return waitMs(450); }
@@ -113,37 +161,88 @@ public class SoloBlue extends NextOpMode {
     private Command autoRoutine() {
         return sequential(
                 robot.flowerRamp.up(),
-                shootSequence(),
+                parallel(robot.shooter.setSpinning(true),
+                        robot.hoodGate.openGate()),
+                quick(),
+                robot.intakeTransfer.feed(),
+                shooter(),
+                parallel(robot.shooter.setSpinning(false),
+                        robot.hoodGate.closeGate(),
+                        robot.intakeTransfer.stop()
+                ),
+                //quick(),
+//                parallel(
+//                        robot.hoodGate.closeGate(),
+//                        robot.flowerRamp.up()
+//                ),
+                //Call mechanisms here
+                //follow(follower, path2()),
                 follow(follower, path1()),
                 robot.intakeTransfer.feedSlow(),
-                follow(follower, path3().with(Constants.foresightConfig.maxPathSpeed.at(.35))),
+                follow(follower, path3().with(Constants.foresightConfig.maxPathSpeed.at(.55))),
                 quick(),
                 follow(follower, special().with(Constants.foresightConfig.maxPathSpeed.at(.5))),
                 follow(follower, special2().with(Constants.foresightConfig.maxPathSpeed.at(.5))),
                 gardenw(),
                 robot.intakeTransfer.stop(),
                 follow(follower, path4()),
-                shootSequence(),
+                parallel(robot.shooter.setSpinning(true),
+                        robot.hoodGate.openGate()),
+                quick(),
+                robot.intakeTransfer.feed(),
+                shooter(),
+                parallel(robot.shooter.setSpinning(false),
+                        robot.hoodGate.closeGate(),
+                        robot.intakeTransfer.stop()
+                ),
                 follow(follower, path5()),
-                parallel(robot.flowerRamp.down(), robot.intakeTransfer.feedSlow()),
+                parallel(
+                        robot.flowerRamp.down(),
+                        robot.intakeTransfer.feedSlow()
+                ),
                 follow(follower, path6().with(Constants.foresightConfig.maxPathSpeed.at(0.33))),
                 flowerw(),
                 follow(follower, jig1().with(Constants.foresightConfig.maxPathSpeed.at(0.33))),
                 follow(follower, jig2().with(Constants.foresightConfig.maxPathSpeed.at(0.35))),
                 follow(follower, path7().with(Constants.foresightConfig.maxPathSpeed.at(0.5))),
-                parallel(robot.intakeTransfer.stop(), robot.flowerRamp.up()),
+                parallel(robot.intakeTransfer.stop(),
+                        robot.flowerRamp.up()),
                 follow(follower, path8()),
-                shootSequence(),
-                follow(follower, path9()),
-                parallel(robot.flowerRamp.down(), robot.intakeTransfer.feedSlow()),
-                follow(follower, path10().with(Constants.foresightConfig.maxPathSpeed.at(0.33))),
-                flowerw(),
-                follow(follower, jig3().with(Constants.foresightConfig.maxPathSpeed.at(0.33))),
-                follow(follower, jig4().with(Constants.foresightConfig.maxPathSpeed.at(0.35))),
-                follow(follower, path11().with(Constants.foresightConfig.maxPathSpeed.at(0.5))),
-                parallel(robot.intakeTransfer.stop(), robot.flowerRamp.up()),
-                follow(follower, path12()),
-                shootSequence()
+                follow(follower,path9()),
+                parallel(robot.shooter.setSpinning(true),
+                        robot.hoodGate.openGate()),
+                quick(),
+                robot.intakeTransfer.feed(),
+                shooter(),
+                parallel(robot.shooter.setSpinning(false),
+                        robot.hoodGate.closeGate(),
+                        robot.intakeTransfer.stop()
+                ),
+                follow(follower,path10()),
+                follow(follower,path11())
+                //,
+//                follow(follower, path9()),
+//                parallel(
+//                        robot.flowerRamp.down(),
+//                        robot.intakeTransfer.feedSlow()
+//                ),
+//                follow(follower, path10().with(Constants.foresightConfig.maxPathSpeed.at(0.33))),
+//                flowerw(),
+//                follow(follower, jig3().with(Constants.foresightConfig.maxPathSpeed.at(0.33))),
+//                follow(follower, jig4().with(Constants.foresightConfig.maxPathSpeed.at(0.35))),
+//                follow(follower, path11().with(Constants.foresightConfig.maxPathSpeed.at(0.5))),
+//                parallel(robot.intakeTransfer.stop(),
+//                        robot.flowerRamp.up()),
+//                follow(follower, path12()),
+//                parallel(robot.shooter.setSpinning(true),
+//                        robot.hoodGate.openGate()),
+//                quick(),
+//                robot.intakeTransfer.feed(),
+//                shooter(),
+//                parallel(robot.shooter.setSpinning(false),
+//                        robot.hoodGate.closeGate(),
+//                        robot.intakeTransfer.stop()
+//                )
         );
     }
 

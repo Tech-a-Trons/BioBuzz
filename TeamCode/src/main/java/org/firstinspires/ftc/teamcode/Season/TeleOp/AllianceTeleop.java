@@ -36,6 +36,7 @@ public abstract class AllianceTeleop extends NextOpMode {
     private static final long READY_HOLD_MS = 120;     // must be ready this long before the buzz
     private static final long GATE_OPEN_DELAY_MS = 250; // same as TurretOp GATE_FEED_DELAY_SEC (0.25 s)
     private static final long TELEMETRY_PERIOD_MS = 100;
+
     // Set false if NextFTC already clears the hub bulk cache for you
     private static final boolean MANUAL_BULK_CACHING = true;
 
@@ -44,6 +45,7 @@ public abstract class AllianceTeleop extends NextOpMode {
     private Follower follower;
     private List<LynxModule> hubs;
 
+    private boolean initialized = false;   // true once setup() has run (happens during INIT)
     private boolean feedPending = false;
     private boolean readyState = false;
     private final ElapsedTime readyTimer = new ElapsedTime();
@@ -60,14 +62,13 @@ public abstract class AllianceTeleop extends NextOpMode {
         this.alliance = alliance;
     }
 
-    @Override
-    public void disabledPeriodic() {
-        Telemetry.log("Status", "Init");
-    }
-
-    @Override
-    public void start() {
-        Telemetry.log("Status", "Start");
+    /**
+     * Everything that touches hardware and sets starting positions. Runs once, on the first INIT loop
+     * (start() calls it too as a safety net). Nothing here drives a motor.
+     */
+    private void setup() {
+        if (initialized) return;
+        initialized = true;
 
         if (MANUAL_BULK_CACHING) {
             hubs = hardwareMap.getAll(LynxModule.class);
@@ -80,6 +81,26 @@ public abstract class AllianceTeleop extends NextOpMode {
 
         robot.init(hardwareMap, follower, alliance);
         robot.tip.init(hardwareMap);
+
+        // Starting positions: hood up, gate closed, flower ramp up
+        robot.hoodGate.initPositions();
+        robot.flowerRamp.up().schedule();
+    }
+
+    @Override
+    public void disabledPeriodic() {
+        setup();
+        if (MANUAL_BULK_CACHING && hubs != null) {
+            for (LynxModule hub : hubs) hub.clearBulkCache();
+        }
+        Telemetry.log("Status", "Init - robot ready");
+    }
+
+    @Override
+    public void start() {
+        Telemetry.log("Status", "Start");
+
+        setup();   // no-op if INIT already ran it
 
         // Continuous commands
         robot.drive.setHeadingSource(() -> follower.pose().heading());
@@ -136,11 +157,11 @@ public abstract class AllianceTeleop extends NextOpMode {
             feedPending = true;
         }
 
-        robot.hoodGate.applyVelocityCompensation(
-                robot.shooter.isSpinning(),
-                robot.shooter.getTargetRpm(),
-                robot.shooter.getCurrentRpm()
-        );
+//        robot.hoodGate.applyVelocityCompensation(
+//                robot.shooter.isSpinning(),
+//                robot.shooter.getTargetRpm(),
+//                robot.shooter.getCurrentRpm()
+//        );
 
         if (feedPending && feedTimer.milliseconds() >= GATE_OPEN_DELAY_MS) {
             robot.intakeTransfer.feed().schedule(); // TurretOp: transfer -1, intake 1
@@ -153,6 +174,7 @@ public abstract class AllianceTeleop extends NextOpMode {
         loopTimer.reset();
 
         follower.update();
+        robot.shooter.setLeds(robot.leds);
 
         // Shooter spins while the right trigger is held
         boolean shooterTrigger = gamepad1.right_trigger_pressed;
@@ -160,30 +182,8 @@ public abstract class AllianceTeleop extends NextOpMode {
             robot.shooter.setSpinning(shooterTrigger).schedule();
             lastShooterTrigger = shooterTrigger;
         }
-//
-//        boolean trigger = gamepad1.left_trigger_pressed;
-//        boolean triggerJustPressed = trigger && !lastTrigger;   // rising edge only
-//        lastTrigger = trigger;
-//
-//        if (triggerJustPressed && !feedPending) {
-//            robot.hoodGate.openGate().schedule();
-//            feedTimer.reset();
-//            feedPending = true;
-//        }
-//
-//        if (feedPending && feedTimer.milliseconds() >= GATE_OPEN_DELAY_MS) {
-//            if (x == 0) {
-//                robot.intakeTransfer.transfer();
-//                x = 1;
-//            } else {
-//                robot.intakeTransfer.feed();
-//                x = 0;
-//            }
-//            feedPending = false;
-//        }
 
         // Ready-to-shoot feedback: shooter at speed AND turret on target -> short buzz + green light
-
 
         if (telemetryTimer.milliseconds() >= TELEMETRY_PERIOD_MS) {
             telemetryTimer.reset();
@@ -199,6 +199,10 @@ public abstract class AllianceTeleop extends NextOpMode {
             Telemetry.log("Current RPM", String.format("%.1f", robot.shooter.getCurrentRpm()));
             Telemetry.log("At speed", String.valueOf(robot.shooter.atSpeed()));
             Telemetry.log("Ready", String.valueOf(readyState));
+            Telemetry.log("Reached speed", String.valueOf(robot.hoodGate.getReachedSpeed()));
+            Telemetry.log("Dip %", String.format("%.3f", robot.hoodGate.getDipPct()));
+            Telemetry.log("Peak dip %", String.format("%.3f", robot.hoodGate.getPeakDipPct()));
+            //Telemetry.log("Battery V", String.format("%.3f", robot.shooter.getVoltage()));
         }
     }
 

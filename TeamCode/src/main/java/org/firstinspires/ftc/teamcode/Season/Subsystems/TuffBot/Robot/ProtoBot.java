@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Robot;
 
 import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
+import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1.ShooterLeds;
 import org.firstinspires.ftc.teamcode.Season.SensorStuff.Limelight.hiveTip;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1.Drivetrain;
 import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp1.EasyTurret;
@@ -19,7 +19,7 @@ import dev.nextftc.robot.Mechanism;
 import dev.nextftc.robot.NextRobot;
 
 public class ProtoBot implements NextRobot {
-
+    public final ShooterLeds leds = new ShooterLeds();
     // All of the mechanisms
     public final Drivetrain drive = new Drivetrain();
     public final IntakeTransfer intakeTransfer = new IntakeTransfer();
@@ -27,6 +27,7 @@ public class ProtoBot implements NextRobot {
     public final GoalSelector goal = new GoalSelector();
     public final FlywheelShooter shooter = new FlywheelShooter();
     public final hiveTip tip = new hiveTip();
+
     public final Ramp flowerRamp  = new Ramp();
     //public final FlowerTaker flower = new FlowerTaker();
 
@@ -44,12 +45,14 @@ public class ProtoBot implements NextRobot {
         //flower.init(hardwareMap);
         hoodGate.init(hardwareMap);
         shooter.init(hardwareMap, follower, goal);
+
+        leds.init(hardwareMap,shooter);
         flowerRamp.init(hardwareMap);
 //        turret.init(hardwareMap, follower, goal);
     }
 
     @Override
     public Set<Mechanism> getMechanisms() {
-        return Set.of(drive, intakeTransfer, hoodGate, shooter, tip, flowerRamp);
+        return Set.of(drive, intakeTransfer, hoodGate, shooter, tip, flowerRamp,leds);
     }
 }
