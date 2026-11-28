@@ -39,20 +39,21 @@ public class ProtoBot implements NextRobot {
      * from the OpMode instead of relying on the framework to do it.
      */
     public void init(HardwareMap hardwareMap, Follower follower, String alliance) {
-        goal.setAlliance(alliance);
-        drive.init(hardwareMap);
-        intakeTransfer.init(hardwareMap);
-        //flower.init(hardwareMap);
-        hoodGate.init(hardwareMap);
+//        goal.setAlliance(alliance);
+//        drive.init(hardwareMap);
+//        intakeTransfer.init(hardwareMap);
+//        //flower.init(hardwareMap);
+//        hoodGate.init(hardwareMap);
         shooter.init(hardwareMap, follower, goal);
 
-        leds.init(hardwareMap,shooter);
-        flowerRamp.init(hardwareMap);
+//        leds.init(hardwareMap,shooter);
+//        flowerRamp.init(hardwareMap);
 //        turret.init(hardwareMap, follower, goal);
     }
 
     @Override
     public Set<Mechanism> getMechanisms() {
-        return Set.of(drive, intakeTransfer, hoodGate, shooter, tip, flowerRamp,leds);
+//        return Set.of(drive, intakeTransfer, hoodGate, shooter, tip, flowerRamp,leds);
+        return Set.of(shooter);
     }
 }

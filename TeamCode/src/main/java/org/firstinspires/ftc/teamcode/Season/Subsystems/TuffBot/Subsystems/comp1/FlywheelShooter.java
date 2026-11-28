@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Subsystems.comp
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
+import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -27,7 +28,22 @@ public class FlywheelShooter implements Mechanism {
     private static final double kI = 0.0000;
     private static final double kD = 0.0;
 
-    private static final double TARGET_RPM = 1010;
+    // Goal positions, field coords (inches), (144,144) = top-right
+    private static final double[][] GOALS = {
+            {57.26, 59.94},  // bottom-left
+            {57.65, 86.69},  // top-left
+            {83.53, 83.10},  // top-right
+            {83.62, 52.67}   // bottom-right
+    };
+    private static final double FIELD_MID = 72.0;
+
+    // rpm = RPM_PER_INCH * distanceToGoal + RPM_AT_ZERO (fit from 1010 @ 51.95", 970 @ 36.94")
+    private static final double RPM_PER_INCH = 2.66667;
+    private static final double RPM_AT_ZERO = 871.49;
+    private static final double MIN_RPM = 850;   // placeholder - set to your safe limits
+    private static final double MAX_RPM = 1100;
+
+    private static double TARGET_RPM = 1010; //1010 for straight aligned to the back //970 when shooting one tile forward from wall
     private static final double DEG_PER_SEC_PER_RPM = 6.0;
     private static final double MAX_INTEGRAL = 0;
 
@@ -50,6 +66,7 @@ public class FlywheelShooter implements Mechanism {
     private double integral = 0, lastError = 0;
     private boolean enabled = false;
     private double lastWritten = 2;
+    Pose pose;
 
     private double targetRpm = TARGET_RPM, currentRpm = 0, rawDegPerSec = 0, power = 0;
 
@@ -61,6 +78,9 @@ public class FlywheelShooter implements Mechanism {
         motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        follower.update();
+
+        pose = follower.pose();
 
 //        light = hardwareMap.get(Servo.class, "light");
 //        light.setPosition(0);
@@ -82,6 +102,14 @@ public class FlywheelShooter implements Mechanism {
         });
     }
 
+    /** Distance (in) from the robot to the goal in its own quadrant. */
+    private double distanceToGoal(Pose p) {
+        int idx;
+        if (p.x() < FIELD_MID) idx = (p.y() < FIELD_MID) ? 0 : 1;  // left half
+        else                   idx = (p.y() < FIELD_MID) ? 3 : 2;  // right half
+        return Math.hypot(GOALS[idx][0] - p.x(), GOALS[idx][1] - p.y());
+    }
+
 //    @Override
 //    public void periodic() {
 //        Mechanism.super.periodic();
@@ -100,6 +128,8 @@ public class FlywheelShooter implements Mechanism {
     }
 
     private void update() {
+        follower.update();
+
         if (motorLeft == null || motorRight == null) return;
         if (!enabled) {
             integral = 0;
@@ -110,6 +140,9 @@ public class FlywheelShooter implements Mechanism {
             return;
         }
 
+        // in update(), replacing the TARGET_RPM line
+        pose = follower.pose();   // refresh every loop (it was only set once in init before)
+        TARGET_RPM = Range.clip(RPM_PER_INCH * distanceToGoal(pose) + RPM_AT_ZERO, MIN_RPM, MAX_RPM);
         targetRpm = TARGET_RPM;
 
         double dt = timer.seconds();

@@ -1,0 +1,215 @@
+package org.firstinspires.ftc.teamcode.Season.TeleOp;
+
+import static com.pedropathing.ivy.commands.Commands.instant;
+
+import com.pedropathing.follower.Follower;
+import com.pedropathing.math.Pose;
+import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.Season.Auto.pedro.Constants;
+import org.firstinspires.ftc.teamcode.Season.Subsystems.TuffBot.Robot.ProtoBot;
+
+import java.util.List;
+
+import dev.nextftc.robot.Telemetry;
+import dev.nextftc.robot.opmode.NextOpMode;
+import dev.nextftc.robot.triggers.CommandGamepad;
+
+public abstract class TurrOp extends NextOpMode {
+
+    // Used only if Auto didn't leave a pose in PoseStorage. Set to where you really place the robot.
+    // Heading is radians; blue is the mirror of red (x -> 141.5 - x, heading -> pi - heading).
+    private static final Pose FALLBACK_RED  = new Pose(55, 8, Math.toRadians(90));
+    private static final Pose FALLBACK_BLUE = new Pose(141.5 -   70.75, 70.75, Math.PI - Math.toRadians(270));
+
+    // Relocalization pose for dpad right (START_POSE from TurretOp, which was set up for BLUE).
+    // Red is the mirror of blue.
+    private static final Pose START_BLUE = new Pose(70.75, 8.6, Math.toRadians(270));
+    private static final Pose START_RED  = new Pose(55, 8, Math.toRadians(90));
+
+    // Robot heading (radians) that is "forward" for the driver at the start. Set this to the direction the
+    // driver looks across the field. Press BACK any time to re-zero it to the robot's current facing.
+    private static final double DRIVER_FORWARD_RED  = Math.toRadians(270);
+    private static final double DRIVER_FORWARD_BLUE = Math.toRadians(270);
+    private static final long READY_HOLD_MS = 120;     // must be ready this long before the buzz
+    private static final long GATE_OPEN_DELAY_MS = 250; // same as TurretOp GATE_FEED_DELAY_SEC (0.25 s)
+    private static final long TELEMETRY_PERIOD_MS = 100;
+
+    // Set false if NextFTC already clears the hub bulk cache for you
+    private static final boolean MANUAL_BULK_CACHING = true;
+
+    private final ProtoBot robot;
+    private final String alliance;
+    private Follower follower;
+    private List<LynxModule> hubs;
+
+    private boolean initialized = false;   // true once setup() has run (happens during INIT)
+    private boolean feedPending = false;
+    private boolean readyState = false;
+    private final ElapsedTime readyTimer = new ElapsedTime();
+    private final ElapsedTime feedTimer = new ElapsedTime();
+    private final ElapsedTime loopTimer = new ElapsedTime();
+    private final ElapsedTime telemetryTimer = new ElapsedTime();
+    boolean lastTrigger = false;
+    boolean lastShooterTrigger = false;
+    int x = 0;
+
+    protected TurrOp(ProtoBot robot, String alliance) {
+        super(robot);
+        this.robot = robot;
+        this.alliance = alliance;
+    }
+
+    /**
+     * Everything that touches hardware and sets starting positions. Runs once, on the first INIT loop
+     * (start() calls it too as a safety net). Nothing here drives a motor.
+     */
+    private void setup() {
+        if (initialized) return;
+        initialized = true;
+
+        if (MANUAL_BULK_CACHING) {
+            hubs = hardwareMap.getAll(LynxModule.class);
+            for (LynxModule hub : hubs) hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
+        }
+
+//        follower = Constants.create(hardwareMap);
+//        Pose fallback = "BLUE".equals(alliance) ? FALLBACK_BLUE : FALLBACK_RED;
+//        follower.setPose(PoseStorage.pose != null ? PoseStorage.pose : fallback);
+
+        robot.init(hardwareMap, follower, alliance);
+//        robot.tip.init(hardwareMap);
+//
+//        // Starting positions: hood up, gate closed, flower ramp up
+//        robot.hoodGate.initPositions();
+//        robot.flowerRamp.up().schedule();
+    }
+
+    @Override
+    public void disabledPeriodic() {
+        setup();
+        if (MANUAL_BULK_CACHING && hubs != null) {
+            for (LynxModule hub : hubs) hub.clearBulkCache();
+        }
+        Telemetry.log("Status", "Init - robot ready");
+    }
+
+    @Override
+    public void start() {
+        Telemetry.log("Status", "Start");
+
+        setup();   // no-op if INIT already ran it
+
+        // Continuous commands
+        robot.drive.setHeadingSource(() -> follower.pose().heading());
+        robot.drive.setForwardHeading("BLUE".equals(alliance) ? DRIVER_FORWARD_BLUE : DRIVER_FORWARD_RED);
+        robot.drive.startDrive(gamepad1);
+        //robot.turret.track().schedule();
+//        robot.flower.f1start();
+//        robot.flower.f2start();
+
+       // CommandGamepad gp1 = new CommandGamepad(gamepad1);
+
+        // Intake / transfer
+//        gp1.a().onTrue(robot.intakeTransfer.collect());
+//        gp1.a().onTrue(instant(() -> feedPending = false));
+//        gp1.rightBumper().onTrue(robot.intakeTransfer.feedSlow());
+//        gp1.rightBumper().onTrue(robot.hoodGate.closeGate());   // TurretOp sets gate to 0.22 (closed) here
+//        gp1.leftBumper().onTrue(robot.intakeTransfer.stop());
+//        gp1.leftBumper().onTrue(robot.hoodGate.closeGate());
+//        gp1.leftBumper().onTrue(instant(() -> feedPending = false));
+//        gp1.leftBumper().onTrue(robot.flowerRamp.up());
+//        //gp1.x().onTrue(robot.intakeTransfer.transfer());
+//
+//        // Hood / gate presets
+//        gp1.dpadLeft().onTrue(robot.hoodGate.presetUp());
+//        gp1.dpadDown().onTrue(robot.flowerRamp.down());
+//        gp1.dpadDown().onTrue(robot.hoodGate.presetDown());
+//
+//        //Flower Ramp controls
+////        gp1.dpadLeft().onTrue(robot.flower.f1down());
+////        gp1.dpadLeft().onTrue(robot.flower.f2down());
+////        gp1.dpadRight().onTrue(robot.flower.f1start());
+////        gp1.dpadRight().onTrue(robot.flower.f2start());
+//
+//        // Relocalize (same as TurretOp dpad right)
+//        gp1.dpadRight().onTrue(instant(() ->
+//                follower.setPose("BLUE".equals(alliance) ? START_BLUE : START_RED)));
+
+        // Shooter mode: fixed RPM <-> distance-based RPM
+        //gp1.x().onTrue(robot.shooter.toggleOdo());
+
+        loopTimer.reset();
+    }
+
+    @Override
+    public void periodic() {
+        // Left trigger: open gate, wait, then feed (non-blocking, same as TurretOp)
+        boolean trigger = gamepad1.left_trigger_pressed;
+        boolean triggerJustPressed = trigger && !lastTrigger;   // rising edge only
+        lastTrigger = trigger;
+
+        if (triggerJustPressed && !feedPending) {
+            //robot.hoodGate.openGate().schedule();   // TurretOp: gate.setPosition(0)
+            feedTimer.reset();
+            feedPending = true;
+        }
+
+//        robot.hoodGate.applyVelocityCompensation(
+//                robot.shooter.isSpinning(),
+//                robot.shooter.getTargetRpm(),
+//                robot.shooter.getCurrentRpm()
+//        );
+
+        if (feedPending && feedTimer.milliseconds() >= GATE_OPEN_DELAY_MS) {
+            robot.intakeTransfer.feed().schedule(); // TurretOp: transfer -1, intake 1
+            feedPending = false;
+        }
+        if (MANUAL_BULK_CACHING) {
+            for (LynxModule hub : hubs) hub.clearBulkCache();
+        }
+        double loopMs = loopTimer.milliseconds();
+        loopTimer.reset();
+
+        follower.update();
+        robot.shooter.setLeds(robot.leds);
+
+        // Shooter spins while the right trigger is held
+        boolean shooterTrigger = gamepad1.right_trigger_pressed;
+        if (shooterTrigger != lastShooterTrigger) {          // only on press / release
+            robot.shooter.setSpinning(shooterTrigger).schedule();
+            lastShooterTrigger = shooterTrigger;
+        }
+
+        // Ready-to-shoot feedback: shooter at speed AND turret on target -> short buzz + green light
+
+        if (telemetryTimer.milliseconds() >= TELEMETRY_PERIOD_MS) {
+            telemetryTimer.reset();
+            Telemetry.log("Status", "Running " + alliance);
+            Pose pose = follower.pose();
+            Telemetry.log("Pose", String.format("x=%.1f y=%.1f h=%.0f", pose.x(), pose.y(), Math.toDegrees(pose.heading())));
+            Telemetry.log("Goal", String.format("(%.0f, %.0f) %s", robot.goal.x(), robot.goal.y(), robot.goal.isUpper() ? "upper" : "lower"));
+            Telemetry.log("Gate pos", String.format("%.2f", robot.hoodGate.getGatePosition()));
+            Telemetry.log("Loop ms", String.format("%.1f", loopMs));
+            Telemetry.log("Hood pos", String.format("%.3f", robot.hoodGate.getHoodPosition()));
+            Telemetry.log("Hood comp", String.format("%.3f", robot.hoodGate.getLastCompensation()));
+            Telemetry.log("Target RPM", String.format("%.1f", robot.shooter.getTargetRpm()));
+            Telemetry.log("Current RPM", String.format("%.1f", robot.shooter.getCurrentRpm()));
+            Telemetry.log("At speed", String.valueOf(robot.shooter.atSpeed()));
+            Telemetry.log("Ready", String.valueOf(readyState));
+            Telemetry.log("Reached speed", String.valueOf(robot.hoodGate.getReachedSpeed()));
+            Telemetry.log("Dip %", String.format("%.3f", robot.hoodGate.getDipPct()));
+            Telemetry.log("Peak dip %", String.format("%.3f", robot.hoodGate.getPeakDipPct()));
+            //Telemetry.log("Battery V", String.format("%.3f", robot.shooter.getVoltage()));
+        }
+    }
+
+    @Override
+    public void end() {
+        Telemetry.log("Status", "End");
+        robot.shooter.setSpinning(false).schedule();
+        robot.intakeTransfer.stop().schedule();
+    }
+}
